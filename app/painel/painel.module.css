@@ -1,0 +1,92 @@
+.topo {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+.medidor {
+  display: grid;
+  justify-items: center;
+  gap: 12px;
+  text-align: center;
+}
+
+/* Medidor circular feito só com CSS */
+.anel {
+  --valor: 0;
+  display: grid;
+  place-items: center;
+  width: 160px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: conic-gradient(var(--vermelho) calc(var(--valor) * 1%), var(--linha) 0);
+}
+
+.anel span {
+  display: grid;
+  place-items: center;
+  width: 122px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--papel);
+  font-family: var(--serifa), Georgia, serif;
+  font-size: 2.2rem;
+}
+
+.barra {
+  display: grid;
+  gap: 6px;
+}
+
+.legenda {
+  display: flex;
+  justify-content: space-between;
+}
+
+.trilho {
+  height: 10px;
+  border-radius: 999px;
+  background: var(--fundo);
+  overflow: hidden;
+}
+
+.preenchido {
+  height: 100%;
+  border-radius: 999px;
+}
+
+.sozinho {
+  background: var(--tinta);
+}
+
+.dicas {
+  background: var(--vermelho);
+}
+
+.resposta {
+  background: #bdbdbd;
+}
+
+.nota {
+  color: var(--tinta-suave);
+  font-size: 0.95rem;
+}
+
+.subtitulo {
+  font-size: 1.4rem;
+  margin-bottom: 12px;
+}
+
+.lista {
+  display: grid;
+  padding: 0;
+  list-style: none;
+}
+
+.lista li {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 0;
+  border-top: 1px solid var(--linha);
+}

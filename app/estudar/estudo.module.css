@@ -1,0 +1,71 @@
+.nota {
+  color: var(--tinta-suave);
+  font-size: 0.95rem;
+}
+
+.grade {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+}
+
+.opcao {
+  display: grid;
+  gap: 10px;
+  align-content: start;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  transition: border-color 0.15s, transform 0.15s;
+}
+
+.opcao:hover {
+  border-color: var(--vermelho);
+  transform: translateY(-2px);
+}
+
+.enunciado {
+  font-size: clamp(1.6rem, 4vw, 2.2rem);
+  max-width: 760px;
+}
+
+.tentativa {
+  display: grid;
+  gap: 8px;
+  border-left: 4px solid var(--tinta);
+}
+
+.dicas {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+  padding: 0;
+  list-style: none;
+}
+
+.dicas li {
+  display: grid;
+  gap: 8px;
+  align-content: start;
+}
+
+.aberta {
+  border-top: 4px solid var(--vermelho);
+}
+
+.fechada {
+  border-style: dashed;
+  background: transparent;
+}
+
+.resposta {
+  display: grid;
+  gap: 8px;
+  background: var(--vermelho-claro);
+  border-color: var(--vermelho);
+}
+
+.fim h2 {
+  font-size: 2rem;
+}
