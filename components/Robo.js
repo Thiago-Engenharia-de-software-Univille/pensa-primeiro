@@ -380,8 +380,6 @@ export default function Robo({ className }) {
       else if (k === "ArrowUp")
         posicao = posicao === 2 ? 2 : 1; // "↑ ↑ ↑ ↓…" ainda vale
       else posicao = 0;
-      // no meio da sequência, as setas não rolam a página (senão o robô sai da tela)
-      if (posicao >= 2 && k.startsWith("Arrow")) e.preventDefault();
       if (posicao < CODIGO.length) return;
       posicao = 0;
       if (quebradoRef.current) return;
@@ -532,7 +530,9 @@ export default function Robo({ className }) {
           <g className="braco-tras">
             <path className="contorno" d="M132 226 Q100 262 106 312" />
             <path className="miolo cinza" d="M132 226 Q100 262 106 312" />
-            <rect className="peca" x="92" y="306" width="28" height="34" rx="10" />
+            <g className="mao-tras">
+              <rect className="peca" x="92" y="306" width="28" height="34" rx="10" />
+            </g>
           </g>
 
           {/* corpo */}

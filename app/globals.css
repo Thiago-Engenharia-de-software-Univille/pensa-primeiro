@@ -868,13 +868,30 @@ textarea {
   to { transform: rotate(-16deg) translateY(-6px); }
 }
 
+/* braço de trás: aceno para FORA do corpo (ângulo positivo leva a mão para a esquerda
+   e para cima) e a mão balança com atraso, como um pulso solto */
 .robo.dancando .braco-tras {
-  animation: aceno-tras 0.4s ease-in-out infinite alternate;
+  animation: aceno-tras 0.8s cubic-bezier(0.45, 0, 0.55, 1) infinite;
 }
 
 @keyframes aceno-tras {
-  from { transform: rotate(10deg); }
-  to { transform: rotate(-55deg); }
+  0%, 100% { transform: rotate(4deg); }
+  50% { transform: rotate(62deg); }
+}
+
+.robo .mao-tras {
+  transform-box: view-box;
+  transform-origin: 106px 308px;
+}
+
+.robo.dancando .mao-tras {
+  animation: pulso-tras 0.8s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+  animation-delay: -0.12s; /* atrasada em relação ao braço: parece solta, não dura */
+}
+
+@keyframes pulso-tras {
+  0%, 100% { transform: rotate(-18deg); }
+  50% { transform: rotate(28deg); }
 }
 
 /* antena de discoteca */
