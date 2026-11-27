@@ -119,7 +119,12 @@ export default function Estudo() {
     // sem IA disponível, vale o verificador local (se houver) com o aviso de indisponibilidade
     const r = ia.status === "indisponivel" && local ? { ...local, aviso: ia.mensagem } : ia;
     if (r.status === "certo") terminar(dicasAbertas === 0 ? "sozinho" : "dicas", r);
-    else atualizar({ retorno: r });
+    else {
+      atualizar({ retorno: r });
+      // errou na primeira etapa: já mostra o painel de dicas ao lado (todas ainda fechadas;
+      // a pessoa abre só se quiser)
+      if (etapa === "tentar") ir(pergunta.id, "dicas");
+    }
   }
 
   function terminar(tipo, confirmacao = retorno) {
@@ -384,9 +389,13 @@ export default function Estudo() {
             {etapa === "dicas" && (
               <div className={styles.controles}>
                 <p>
-                  {dicasAbertas === 0
-                    ? "Quer a primeira dica ou já resolveu?"
-                    : "Corrigiu a tentativa? Confira de novo ou abra a próxima dica."}
+                  {retorno && retorno.status !== "certo"
+                    ? dicasAbertas < pergunta.dicas.length
+                      ? "Corrija a tentativa e confira de novo. Se quiser uma ajuda, abra uma dica."
+                      : "Corrija a tentativa e confira de novo."
+                    : dicasAbertas === 0
+                      ? "Quer a primeira dica ou já resolveu?"
+                      : "Corrigiu a tentativa? Confira de novo ou abra a próxima dica."}
                 </p>
                 <div className="acoes">
                   {!todasAbertas && (
