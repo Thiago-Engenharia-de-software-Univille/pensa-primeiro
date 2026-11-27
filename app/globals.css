@@ -784,3 +784,30 @@ textarea {
 .robo[data-expressao="girando"] .antena {
   animation: alerta 0.3s infinite;
 }
+
+/* easter egg: código Konami → o robô dança */
+.robo.dancando .inclina {
+  animation: danca 0.45s ease-in-out infinite alternate;
+}
+
+@keyframes danca {
+  from { transform: rotate(-6deg) translateY(0); }
+  to { transform: rotate(6deg) translateY(-8px); }
+}
+
+.robo .notas text {
+  fill: var(--vermelho);
+  font: 700 30px var(--grotesca), system-ui, sans-serif;
+  opacity: 0;
+  animation: nota 1.2s ease-out infinite;
+}
+
+.robo .notas text:nth-child(2) { animation-delay: 0.3s; fill: var(--tinta); }
+.robo .notas text:nth-child(3) { animation-delay: 0.6s; fill: var(--tinta); }
+.robo .notas text:nth-child(4) { animation-delay: 0.9s; }
+
+@keyframes nota {
+  0% { opacity: 0; transform: translateY(10px); }
+  30% { opacity: 1; }
+  100% { opacity: 0; transform: translateY(-30px); }
+}

@@ -84,6 +84,7 @@ export default function Robo({ className }) {
   const [quebra, setQuebra] = useState(null);
   const quebradoRef = useRef(false);
   const timersQuebra = useRef([]);
+  const [dancando, setDancando] = useState(false);
   const timerFala = useRef(0);
   const expressarRef = useRef(() => {});
   const id = useId().replace(/:/g, "");
@@ -351,6 +352,45 @@ export default function Robo({ className }) {
     };
   }, []);
 
+  // ---------- easter egg: código Konami (↑ ↑ ↓ ↓ ← → ← → B A) ----------
+  // O robô dança com notinhas musicais… e avisa que a resposta continua lacrada.
+  useEffect(() => {
+    const CODIGO = [
+      "ArrowUp",
+      "ArrowUp",
+      "ArrowDown",
+      "ArrowDown",
+      "ArrowLeft",
+      "ArrowRight",
+      "ArrowLeft",
+      "ArrowRight",
+      "b",
+      "a",
+    ];
+    let posicao = 0;
+    let timer = 0;
+    function tecla(e) {
+      if (e.target.closest?.("input, textarea")) return;
+      const k = e.key.length === 1 ? e.key.toLowerCase() : e.key;
+      posicao = k === CODIGO[posicao] ? posicao + 1 : k === CODIGO[0] ? 1 : 0;
+      if (posicao < CODIGO.length) return;
+      posicao = 0;
+      if (quebradoRef.current) return;
+      setDancando(true);
+      expressarRef.current("feliz", 3600);
+      setFala({ texto: "Código aceito! A resposta segue lacrada.", n: Date.now() });
+      clearTimeout(timerFala.current);
+      timerFala.current = setTimeout(() => setFala(null), 3400);
+      clearTimeout(timer);
+      timer = setTimeout(() => setDancando(false), 3600);
+    }
+    window.addEventListener("keydown", tecla);
+    return () => {
+      window.removeEventListener("keydown", tecla);
+      clearTimeout(timer);
+    };
+  }, []);
+
   useEffect(
     () => () => {
       clearTimeout(timerFala.current);
@@ -411,7 +451,7 @@ export default function Robo({ className }) {
   return (
     <svg
       ref={svgRef}
-      className={`robo ${quebra ? `quebra-${quebra}` : ""} ${className ?? ""}`}
+      className={`robo ${quebra ? `quebra-${quebra}` : ""} ${dancando ? "dancando" : ""} ${className ?? ""}`}
       data-expressao="neutro"
       viewBox="40 0 390 450"
       role="img"
@@ -545,6 +585,24 @@ export default function Robo({ className }) {
           </g>
         </g>
       </g>
+
+      {/* notinhas da dança (código Konami) */}
+      {dancando && (
+        <g className="notas" aria-hidden="true">
+          <text x="92" y="120">
+            ♪
+          </text>
+          <text x="270" y="196">
+            ♫
+          </text>
+          <text x="80" y="210">
+            ♪
+          </text>
+          <text x="282" y="290">
+            ♫
+          </text>
+        </g>
+      )}
 
       {/* sono: depois de um tempo sem mexer o mouse */}
       <g className="exp sonolento zz">
