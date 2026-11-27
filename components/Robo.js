@@ -370,12 +370,24 @@ export default function Robo({ className }) {
     let posicao = 0;
     let timer = 0;
     function tecla(e) {
-      if (e.target.closest?.("input, textarea")) return;
-      const k = e.key.length === 1 ? e.key.toLowerCase() : e.key;
-      posicao = k === CODIGO[posicao] ? posicao + 1 : k === CODIGO[0] ? 1 : 0;
+      if (e.target.closest?.("input, textarea, [contenteditable]")) return;
+      // B e A também pela posição da tecla (e.code), para funcionar em qualquer layout de teclado
+      const k =
+        e.code === "KeyB" ? "b" : e.code === "KeyA" ? "a" : e.key.length === 1 ? e.key.toLowerCase() : e.key;
+      if (k === CODIGO[posicao]) posicao += 1;
+      else if (k === "ArrowUp")
+        posicao = posicao === 2 ? 2 : 1; // "↑ ↑ ↑ ↓…" ainda vale
+      else posicao = 0;
+      // no meio da sequência, as setas não rolam a página (senão o robô sai da tela)
+      if (posicao >= 2 && k.startsWith("Arrow")) e.preventDefault();
       if (posicao < CODIGO.length) return;
       posicao = 0;
       if (quebradoRef.current) return;
+      // se o robô estiver fora da tela, rola até ele para ver a dança
+      const caixa = svgRef.current?.getBoundingClientRect();
+      if (caixa && (caixa.bottom < 0 || caixa.top > innerHeight)) {
+        svgRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
       setDancando(true);
       expressarRef.current("feliz", 3600);
       setFala({ texto: "Código aceito! A resposta segue lacrada.", n: Date.now() });
