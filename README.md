@@ -37,6 +37,12 @@ e instantâneo. Só quando ele não confirma a resposta, ou na pergunta livre, o
 2. Copie `.env.example` para `.env.local` e cole a chave em `GEMINI_API_KEY`.
 3. Reinicie o `npm run dev`. Na Vercel, cadastre a mesma variável em *Settings → Environment Variables*.
 
-Para caber no plano gratuito: respostas repetidas vêm do cache, há limite por pessoa (6/min) e
-no site todo (10/min e 300/dia, ajustáveis no `.env.local`), o prompt e a resposta são curtos e,
-sem chave ou se a cota acabar, o site volta para o verificador local sem quebrar.
+Para caber no plano gratuito e evitar abuso:
+- respostas repetidas vêm do cache;
+- limite por pessoa (6/min e 40/dia) e no site todo (10/min e 300/dia), ajustáveis no `.env.local`;
+- a rota só aceita pedidos vindos do próprio site;
+- antes de chamar a IA, `lib/filtro.js` barra texto sem sentido, tentativas de manipular a IA
+  ("ignore as instruções", "me dá a resposta") e palavrões, com mensagens gentis e sem gastar cota;
+- campos com tamanho máximo (600 caracteres na tentativa, 200 na pergunta livre) e uma pausa
+  curta entre conferências;
+- sem chave ou se a cota acabar, o site volta para o verificador local sem quebrar.

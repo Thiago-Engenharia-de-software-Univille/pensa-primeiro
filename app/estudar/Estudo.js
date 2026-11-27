@@ -11,6 +11,7 @@ import NivelSeletor from "@/components/NivelSeletor";
 import { registrar, RESULTADOS } from "@/lib/historico";
 import { podeVerificar, verificar } from "@/lib/verificador";
 import { conferirComIA } from "@/lib/conferirIA";
+import { filtrar, LIMITES } from "@/lib/filtro";
 import { sugestoesDeEscrita, juntarSugestoes, aplicarSugestoes } from "@/lib/escrita";
 import styles from "./estudo.module.css";
 
@@ -51,6 +52,7 @@ export default function Estudo() {
   const [sessoes, setSessoes] = useState({});
   const [escrevendoLivre, setEscrevendoLivre] = useState(false);
   const [textoLivre, setTextoLivre] = useState("");
+  const [avisoLivre, setAvisoLivre] = useState(null);
   const [conferindo, setConferindo] = useState(false);
   const nivel = useNivel();
   const ajuda = NIVEIS[nivel];
@@ -136,9 +138,16 @@ export default function Estudo() {
       terminar(dicasAbertas === 0 ? "sozinho" : "dicas", { ...local, fonte: "site" });
       return;
     }
+    // filtro local: responde na hora e nem chega a gastar a IA
+    const barrado = filtrar(tentativa, "tentativa", { codigo: areaDe(pergunta) === "programacao" });
+    if (barrado) {
+      atualizar({ retorno: { status: "foco", mensagem: barrado.mensagem } });
+      return;
+    }
     setConferindo(true);
     const ia = await conferirComIA(pergunta, tentativa, nivel);
-    setConferindo(false);
+    // pausa curta antes de poder conferir de novo: evita cliques em sequência gastando a cota
+    setTimeout(() => setConferindo(false), 1500);
     // sem IA disponível, vale o verificador local (se houver) com o aviso de indisponibilidade
     const r = ia.status === "indisponivel" && local ? { ...local, aviso: ia.mensagem } : ia;
     atualizar({ escrita: juntarSugestoes(escritaLocal, ia.escrita ?? []) });
@@ -212,7 +221,9 @@ export default function Estudo() {
                 className={styles.formLivre}
                 onSubmit={(e) => {
                   e.preventDefault();
-                  escolher("livre");
+                  const barrado = filtrar(textoLivre, "pergunta");
+                  setAvisoLivre(barrado?.mensagem ?? null);
+                  if (!barrado) escolher("livre");
                 }}
               >
                 <label htmlFor="livre" className={styles.rotuloFolha}>
@@ -228,8 +239,17 @@ export default function Estudo() {
                   value={textoLivre}
                   onChange={(e) => setTextoLivre(e.target.value)}
                   placeholder="Ex.: Como calcular a área de um triângulo?"
+                  maxLength={LIMITES.pergunta}
                   autoFocus
                 />
+                <p className={styles.contador}>
+                  {textoLivre.length}/{LIMITES.pergunta}
+                </p>
+                {avisoLivre && (
+                  <p className={`${styles.retorno} ${styles.foco}`} role="status">
+                    {avisoLivre}
+                  </p>
+                )}
                 <div className="acoes">
                   <button className="botao" disabled={textoLivre.trim().length < 10}>
                     Continuar
@@ -330,6 +350,7 @@ export default function Estudo() {
             value={tentativa}
             onChange={(e) => mudarTentativa(e.target.value)}
             onKeyDown={atalho}
+            maxLength={LIMITES.tentativa}
             placeholder="Eu acho que…"
             autoFocus
           />
@@ -391,6 +412,7 @@ export default function Estudo() {
               value={tentativa}
               onChange={(e) => mudarTentativa(e.target.value)}
               onKeyDown={atalho}
+              maxLength={LIMITES.tentativa}
               readOnly={etapa === "fim"}
             />
             {etapa === "dicas" && <Retorno retorno={retorno} />}
@@ -499,7 +521,12 @@ export default function Estudo() {
 }
 
 // Caixa com o resultado da conferência, logo abaixo da tentativa.
-const TITULOS = { quase: "Quase lá.", errado: "Ainda não bate.", indisponivel: "Sem conferência agora." };
+const TITULOS = {
+  quase: "Quase lá.",
+  errado: "Ainda não bate.",
+  indisponivel: "Sem conferência agora.",
+  foco: "Só um detalhe.",
+};
 
 function Retorno({ retorno }) {
   if (!retorno || retorno.status === "certo") return null;

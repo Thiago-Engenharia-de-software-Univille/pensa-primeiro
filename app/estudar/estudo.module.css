@@ -515,3 +515,17 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+/* ---------- filtro (mensagens gentis) ---------- */
+
+.foco {
+  border: 1px solid var(--linha);
+  background: var(--papel);
+}
+
+.contador {
+  margin-top: -8px;
+  font-size: 0.8rem;
+  color: var(--tinta-suave);
+  text-align: right;
+}
