@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Robo from "@/components/Robo";
+import { APRESENTACAO } from "@/lib/links";
 import styles from "./inicio.module.css";
 
 const passos = [
@@ -40,10 +41,19 @@ const ferramentas = [
 ];
 
 const etapasTrabalho = [
-  ["Escolha do problema", "Entre cinco problemas do dia a dia, a dependência da IA nos estudos foi o que mais apareceu na nossa rotina."],
+  [
+    "Escolha do problema",
+    "Entre cinco problemas do dia a dia, a dependência da IA nos estudos foi o que mais apareceu na nossa rotina.",
+  ],
   ["Matriz CSD", "Separamos o que tínhamos de certeza, o que supúnhamos e o que ainda queríamos descobrir."],
-  ["Entrevistas", "Roteiro de oito perguntas abertas com estudantes de 15 a 25 anos que usam IA para estudar."],
-  ["Protótipo", "Este site, desenhado para responder à pergunta que ficou: como a IA pode ajudar a pensar, em vez de pensar por nós?"],
+  [
+    "Entrevistas",
+    "Roteiro de oito perguntas abertas com estudantes de 15 a 25 anos que usam IA para estudar.",
+  ],
+  [
+    "Protótipo",
+    "Este site, desenhado para responder à pergunta que ficou: como a IA pode ajudar a pensar, em vez de pensar por nós?",
+  ],
 ];
 
 const grupo = ["Arthur", "Henrique Leal", "Henrique Miguel", "Nicolas", "Thiago W."];
@@ -60,8 +70,8 @@ export default function Inicio() {
             primeiro.
           </h1>
           <p className={styles.sub}>
-            Uma IA de estudos que pede a sua tentativa antes de ajudar e libera as dicas aos poucos. A resposta vem
-            depois.
+            Uma IA de estudos que pede a sua tentativa antes de ajudar e libera as dicas aos poucos. A
+            resposta vem depois.
           </p>
           <div className="acoes">
             <Link href="/estudar" className="botao">
@@ -140,9 +150,9 @@ export default function Inicio() {
         <div className={styles.cabecalho}>
           <h2 id="sobre-trabalho">De onde veio este site</h2>
           <p className={styles.textoTrabalho}>
-            O Pensa Primeiro é o protótipo do trabalho <em>Desinteligência Humana</em>, da disciplina de Interação
-            Humano-Computador do curso de Engenharia de Software da Univille. A pergunta que guiou tudo foi: o uso
-            exagerado da IA está diminuindo a nossa capacidade de raciocinar, criar e lembrar?
+            O Pensa Primeiro é o protótipo do trabalho <em>Desinteligência Humana</em>, da disciplina de
+            Interação Humano-Computador do curso de Engenharia de Software da Univille. A pergunta que guiou
+            tudo foi: o uso exagerado da IA está diminuindo a nossa capacidade de raciocinar, criar e lembrar?
           </p>
         </div>
 
@@ -163,6 +173,9 @@ export default function Inicio() {
             <Link href="/sobre" className="botao secundario">
               Ver a pesquisa completa
             </Link>
+            <a href={APRESENTACAO} className="botao" target="_blank" rel="noopener">
+              Ver a apresentação ↗
+            </a>
           </div>
         </div>
       </section>

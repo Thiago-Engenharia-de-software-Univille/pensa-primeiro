@@ -365,6 +365,13 @@ main {
   color: var(--tinta-suave);
 }
 
+.rodape a {
+  color: var(--tinta);
+  text-decoration-color: var(--vermelho);
+  text-underline-offset: 4px;
+  white-space: nowrap;
+}
+
 .botao {
   display: inline-block;
   border: 1px solid var(--tinta);

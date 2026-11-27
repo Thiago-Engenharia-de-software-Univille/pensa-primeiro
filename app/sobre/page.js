@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Medidor from "@/components/Medidor";
+import { APRESENTACAO, PDF_DO_TRABALHO } from "@/lib/links";
 import styles from "./sobre.module.css";
 
 export const metadata = { title: "Sobre · Pensa Primeiro" };
@@ -76,15 +77,23 @@ export default function Sobre() {
           Humano-Computador. Pesquisamos como o uso exagerado da IA nos estudos pode diminuir a capacidade de
           raciocinar, criar e lembrar.
         </p>
+        <div className="acoes">
+          <a href={APRESENTACAO} className="botao" target="_blank" rel="noopener">
+            Ver a apresentação ↗
+          </a>
+          <a href={PDF_DO_TRABALHO} className="botao secundario" target="_blank" rel="noopener">
+            Baixar o trabalho em PDF ↗
+          </a>
+        </div>
       </header>
 
       <section className={styles.secao}>
         <h2>O problema</h2>
         <p className={styles.texto}>
           A IA vira um problema quando deixa de ser apoio e passa a pensar no lugar de quem estuda. É o que a
-          literatura chama de <strong>descarregamento cognitivo</strong> (<em>cognitive offloading</em>). Gerlich
-          (2025) ouviu 666 pessoas e encontrou relação entre o uso frequente de IA e notas mais baixas em pensamento
-          crítico, com resultado pior justamente entre 17 e 25 anos.
+          literatura chama de <strong>descarregamento cognitivo</strong> (<em>cognitive offloading</em>).
+          Gerlich (2025) ouviu 666 pessoas e encontrou relação entre o uso frequente de IA e notas mais baixas
+          em pensamento crítico, com resultado pior justamente entre 17 e 25 anos.
         </p>
         <ul className={styles.dados}>
           {dados.map((d) => (
@@ -119,8 +128,9 @@ export default function Sobre() {
       <section className={styles.secao}>
         <h2>Como o site responde a isso</h2>
         <p className={styles.texto}>
-          Nosso público são estudantes do ensino médio e da graduação, de 15 a 25 anos, que já usam IA para estudar.
-          A ideia não é proibir a ferramenta, e sim mudar a ordem: primeiro a pessoa pensa, depois a IA ajuda.
+          Nosso público são estudantes do ensino médio e da graduação, de 15 a 25 anos, que já usam IA para
+          estudar. A ideia não é proibir a ferramenta, e sim mudar a ordem: primeiro a pessoa pensa, depois a
+          IA ajuda.
         </p>
         <dl className={styles.respostas}>
           {respostas.map(([nome, texto, href]) => (

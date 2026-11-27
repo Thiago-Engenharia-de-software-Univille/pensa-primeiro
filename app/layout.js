@@ -2,6 +2,7 @@ import { Inter_Tight, Marcellus } from "next/font/google";
 import Link from "next/link";
 import CabecaRobo from "@/components/CabecaRobo";
 import Voltar from "@/components/Voltar";
+import { APRESENTACAO } from "@/lib/links";
 import "./globals.css";
 
 const serifa = Marcellus({
@@ -41,7 +42,10 @@ export default function RootLayout({ children }) {
           {children}
         </main>
         <footer className="rodape">
-          Trabalho de Interação Humano-Computador, Engenharia de Software, Univille, 2026.
+          Trabalho de Interação Humano-Computador, Engenharia de Software, Univille, 2026.{" "}
+          <a href={APRESENTACAO} target="_blank" rel="noopener">
+            Ver a apresentação ↗
+          </a>
         </footer>
       </body>
     </html>

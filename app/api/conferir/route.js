@@ -7,6 +7,10 @@ import { conferirComGemini, iaConfigurada } from "@/lib/gemini";
 export async function POST(request) {
   if (!iaConfigurada()) return Response.json({ erro: "sem-chave" }, { status: 503 });
 
+  // Só aceita pedidos feitos pelas páginas do próprio site: impede que outros sites
+  // (ou scripts) usem esta rota para gastar a cota da chave.
+  if (!mesmaOrigem(request)) return Response.json({ erro: "origem" }, { status: 403 });
+
   let corpo;
   try {
     corpo = await request.json();
@@ -43,5 +47,16 @@ export async function POST(request) {
   } catch (erro) {
     const limite = erro.codigo === "limite";
     return Response.json({ erro: limite ? "limite" : "falha" }, { status: limite ? 429 : 502 });
+  }
+}
+
+function mesmaOrigem(request) {
+  const origem = request.headers.get("origin");
+  const host = request.headers.get("x-forwarded-host") ?? request.headers.get("host");
+  if (!origem || !host) return false;
+  try {
+    return new URL(origem).host === host;
+  } catch {
+    return false;
   }
 }
