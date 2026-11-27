@@ -64,19 +64,22 @@ export default function Painel() {
 
       {/* resumo em números */}
       <ul className={styles.resumo}>
-        <li>
+        <li data-tip="Perguntas que você terminou neste navegador." data-tip-alinha="esquerda">
           <strong>{total}</strong>
           <span>{total === 1 ? "pergunta estudada" : "perguntas estudadas"}</span>
         </li>
-        <li>
+        <li data-tip="Dias seguidos com pelo menos uma pergunta, contando até hoje.">
           <strong>{sequencia}</strong>
           <span>{sequencia === 1 ? "dia seguido estudando" : "dias seguidos estudando"}</span>
         </li>
-        <li>
+        <li data-tip="Quantas dicas você abriu, em média, em cada pergunta. Menos dicas = mais autonomia.">
           <strong>{mediaDicas}</strong>
           <span>dicas por pergunta, em média</span>
         </li>
-        <li>
+        <li
+          data-tip="Rodadas do Confira a IA em que você achou a frase errada, de quantas jogou."
+          data-tip-alinha="direita"
+        >
           <strong>
             {achados}
             <small>/{conferencias.length}</small>
@@ -117,7 +120,11 @@ export default function Painel() {
             Confira a IA
           </Link>
         )}
-        <button className="botao discreto" onClick={limpar}>
+        <button
+          className="botao discreto"
+          onClick={limpar}
+          data-tip="Apaga tudo o que foi salvo neste navegador: perguntas, rodadas e conquistas."
+        >
           Apagar histórico
         </button>
       </div>
@@ -355,7 +362,7 @@ function SensoCritico({ conferencias }) {
           <li
             key={c.data}
             className={c.acertou ? styles.achou : styles.passou}
-            title={`${c.materia}: ${c.acertou ? "achou o erro" : "o erro passou"}`}
+            data-tip={`${c.materia}: ${c.acertou ? "achou o erro" : "o erro passou"}`}
           >
             <span className="sr-only">{c.acertou ? "achou" : "passou"}</span>
           </li>

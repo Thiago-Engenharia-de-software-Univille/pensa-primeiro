@@ -19,7 +19,8 @@ export default function NivelSeletor({ compacto = false }) {
             aria-checked={nivel === id}
             className={nivel === id ? "ativo" : ""}
             onClick={() => mudarNivel(id)}
-            title={n.descricao}
+            data-tip={n.descricao}
+            data-tip-lado="baixo"
           >
             {n.nome}
           </button>

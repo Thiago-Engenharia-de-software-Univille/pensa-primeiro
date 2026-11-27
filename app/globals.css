@@ -418,11 +418,23 @@ main {
   border-color: var(--vermelho);
 }
 
+/* desativado com cores mais claras, não com opacity: senão o tooltip (::after) também ficaria apagado */
 .botao:disabled {
-  opacity: 0.35;
   cursor: not-allowed;
-  background: var(--tinta);
-  border-color: var(--tinta);
+  background: #b9b9b7;
+  border-color: #b9b9b7;
+  color: #f4f4f2;
+}
+
+.botao.secundario:disabled {
+  background: transparent;
+  border-color: #cfcfcd;
+  color: #a5a5a3;
+}
+
+.botao.discreto:disabled {
+  background: none;
+  color: #a5a5a3;
 }
 
 .botao.secundario {
@@ -645,4 +657,102 @@ textarea {
 @media (prefers-reduced-motion: reduce) {
   .robo .fumaca circle { opacity: 0.5; }
   .robo .faiscas path { opacity: 1; }
+}
+
+/* ---------- tooltips do site ----------
+   Uso: data-tip="texto" em qualquer botão ou link. Aparecem ao passar o mouse
+   (com um pequeno atraso) e ao navegar com o Tab. data-tip-lado="baixo" abre embaixo;
+   data-tip-alinha="esquerda"/"direita" evita sair da tela perto das bordas.
+   :where() deixa a especificidade zero, então quem já é position: absolute continua. */
+
+:where([data-tip]) {
+  position: relative;
+}
+
+[data-tip]::after {
+  content: attr(data-tip);
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 8px);
+  z-index: 30;
+  width: max-content;
+  max-width: min(260px, 80vw);
+  padding: 7px 10px;
+  border-radius: 8px;
+  background: var(--tinta);
+  color: var(--papel);
+  font: 500 0.8rem/1.4 var(--grotesca), system-ui, sans-serif;
+  letter-spacing: 0;
+  text-align: left;
+  text-decoration: none;
+  text-transform: none;
+  white-space: normal;
+  opacity: 0;
+  transform: translate(-50%, 4px);
+  transition: opacity 0.12s, transform 0.12s;
+  pointer-events: none;
+}
+
+[data-tip-lado="baixo"]::after {
+  top: calc(100% + 8px);
+  bottom: auto;
+  transform: translate(-50%, -4px);
+}
+
+[data-tip-alinha="esquerda"]::after {
+  left: 0;
+  transform: translate(0, 4px);
+}
+
+[data-tip-alinha="direita"]::after {
+  left: auto;
+  right: 0;
+  transform: translate(0, 4px);
+}
+
+[data-tip-lado="baixo"][data-tip-alinha]::after {
+  transform: translate(0, -4px);
+}
+
+/* teclado: na hora; mouse: com um atraso curto, para não piscar ao passar por cima */
+[data-tip]:focus-visible::after {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+@media (hover: hover) {
+  [data-tip]:hover::after {
+    opacity: 1;
+    transform: translate(-50%, 0);
+    transition-delay: 0.35s;
+  }
+}
+
+[data-tip-alinha]:focus-visible::after,
+[data-tip-alinha]:hover::after {
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-tip]::after {
+    transition: none;
+  }
+}
+
+/* botão desativado não reage ao mouse (as regras de :hover vêm antes e têm o mesmo peso) */
+.botao:disabled:hover {
+  background: #b9b9b7;
+  border-color: #b9b9b7;
+  color: #f4f4f2;
+}
+
+.botao.secundario:disabled:hover {
+  background: transparent;
+  border-color: #cfcfcd;
+  color: #a5a5a3;
+}
+
+.botao.discreto:disabled:hover {
+  background: none;
+  color: #a5a5a3;
 }

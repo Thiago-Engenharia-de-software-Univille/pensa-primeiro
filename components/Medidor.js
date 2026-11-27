@@ -22,7 +22,14 @@ export default function Medidor({ valor, className }) {
       <path d={arco} className="trilho" />
       <path d={arco} className="valor" pathLength="100" style={{ "--v": valor }} />
       {riscos}
-      <line x1={CX} y1={CY} x2={CX - 70} y2={CY} className="ponteiro" style={{ "--ang": `${valor * 1.8}deg` }} />
+      <line
+        x1={CX}
+        y1={CY}
+        x2={CX - 70}
+        y2={CY}
+        className="ponteiro"
+        style={{ "--ang": `${valor * 1.8}deg` }}
+      />
       <circle cx={CX} cy={CY} r="13" className="eixo" />
       <circle cx={CX} cy={CY} r="4.5" className="eixo-miolo" />
     </svg>

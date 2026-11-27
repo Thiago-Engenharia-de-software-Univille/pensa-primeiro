@@ -21,7 +21,9 @@ export default function Etapas({ atual, aoClicar, liberadas = 0 }) {
                 type="button"
                 className="etapa-botao"
                 onClick={() => aoClicar(i)}
-                title={`Ir para: ${nome}`}
+                data-tip={`Ir para: ${nome}`}
+                data-tip-lado="baixo"
+                data-tip-alinha="esquerda"
               >
                 {conteudo}
               </button>

@@ -55,7 +55,14 @@ export default function Voltar() {
   }
 
   return (
-    <button type="button" className="voltar" onClick={voltar}>
+    <button
+      type="button"
+      className="voltar"
+      onClick={voltar}
+      data-tip="Volta para a tela anterior"
+      data-tip-lado="baixo"
+      data-tip-alinha="esquerda"
+    >
       {/* seta desenhada (a "←" de texto fica desalinhada conforme a fonte) */}
       <svg className="voltar-seta" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true">
         <path

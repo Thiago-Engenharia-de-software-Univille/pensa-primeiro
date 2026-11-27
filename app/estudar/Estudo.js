@@ -318,7 +318,12 @@ export default function Estudo() {
         <div className={styles.topoDireita}>
           {etapa !== "fim" && <NivelSeletor compacto />}
           {etapa !== "fim" && (
-            <button className="botao discreto" onClick={estudarOutra}>
+            <button
+              className="botao discreto"
+              onClick={estudarOutra}
+              data-tip="Volta para a lista. O que você escreveu fica guardado."
+              data-tip-alinha="direita"
+            >
               Trocar de pergunta
             </button>
           )}
@@ -348,7 +353,11 @@ export default function Estudo() {
               <button className="botao" onClick={estudarOutra}>
                 Estudar outra pergunta
               </button>
-              <button className="botao secundario" onClick={refazer}>
+              <button
+                className="botao secundario"
+                onClick={refazer}
+                data-tip="Começa esta pergunta do zero. O resultado de agora continua no painel."
+              >
                 Refazer esta
               </button>
               <Link href="/painel" className="botao secundario">
@@ -378,13 +387,24 @@ export default function Estudo() {
             autoFocus
           />
           <div className="acoes">
-            <button className="botao" disabled={!tentativaValida || conferindo} onClick={conferir}>
+            <button
+              className="botao"
+              disabled={!tentativaValida || conferindo}
+              onClick={conferir}
+              data-tip={
+                tentativaValida
+                  ? "Confere a sua tentativa. Primeiro o verificador do site; se precisar, a IA."
+                  : "Escreva a sua tentativa primeiro."
+              }
+              data-tip-alinha="esquerda"
+            >
               {conferindo ? "Conferindo…" : "Conferir minha resposta"}
             </button>
             <button
               className="botao secundario"
               disabled={(!tentativaValida && dicasAbertas === 0) || conferindo}
               onClick={() => irParaDicas()}
+              data-tip="Mostra o painel de dicas ao lado. Elas continuam fechadas até você pedir."
             >
               {dicasAbertas > 0 ? "Voltar às dicas" : "Pedir a primeira dica"}
             </button>
@@ -392,6 +412,7 @@ export default function Estudo() {
               <button
                 className="botao discreto"
                 onClick={() => irParaDicas({ tentativa: tentativa.trim() || "Não sei por onde começar." })}
+                data-tip="Vai para as dicas mesmo sem tentativa. Tudo bem começar por aqui."
               >
                 Não sei por onde começar
               </button>
@@ -400,7 +421,7 @@ export default function Estudo() {
               <button
                 className="botao discreto"
                 onClick={() => terminar("sozinho")}
-                title="A conferência automática pode se enganar"
+                data-tip="Use se a conferência se enganou. A pergunta fica marcada como resolvida."
               >
                 Acho que acertei
               </button>
@@ -442,26 +463,40 @@ export default function Estudo() {
               <div className="acoes">
                 {!respostaVista ? (
                   <>
-                    <button className="botao" disabled={conferindo} onClick={conferir}>
+                    <button
+                      className="botao"
+                      disabled={conferindo}
+                      onClick={conferir}
+                      data-tip="Confere a sua tentativa de novo."
+                      data-tip-alinha="esquerda"
+                    >
                       {conferindo ? "Conferindo…" : "Conferir minha resposta"}
                     </button>
                     {retorno && retorno.status !== "certo" && (
                       <button
                         className="botao discreto"
                         onClick={() => terminar(dicasAbertas === 0 ? "sozinho" : "dicas")}
-                        title="A conferência automática pode se enganar"
+                        data-tip="Use se a conferência se enganou. A pergunta fica marcada como resolvida."
                       >
                         Acho que acertei
                       </button>
                     )}
                     {semResposta && todasAbertas && (
-                      <button className="botao discreto" onClick={() => terminar("travei")}>
+                      <button
+                        className="botao discreto"
+                        onClick={() => terminar("travei")}
+                        data-tip="Termina a pergunta sem resolver. Leve a dúvida para a aula."
+                      >
                         Ainda não consegui
                       </button>
                     )}
                   </>
                 ) : (
-                  <button className="botao" onClick={() => terminar("resposta")}>
+                  <button
+                    className="botao"
+                    onClick={() => terminar("resposta")}
+                    data-tip="Termina a pergunta. Fica registrado que você precisou da resposta."
+                  >
                     Entendi, terminar
                   </button>
                 )}
@@ -540,7 +575,14 @@ export default function Estudo() {
                     className={styles.lacre}
                     disabled={!respostaLiberada || etapa === "fim"}
                     onClick={() => atualizar({ respostaVista: true })}
-                    title={respostaLiberada ? undefined : "Abra as dicas antes"}
+                    data-tip={
+                      respostaLiberada
+                        ? "Abre a resposta. Fica registrado que você precisou dela."
+                        : ajuda.respostaDepoisDe === 1
+                          ? "Abre depois da primeira dica."
+                          : "Abre depois que você abrir as dicas."
+                    }
+                    data-tip-alinha="direita"
                   >
                     {respostaLiberada ? "Abrir resposta" : "Lacrada"}
                   </button>
@@ -564,12 +606,21 @@ export default function Estudo() {
                     <button
                       className="botao secundario"
                       onClick={() => atualizar({ dicas: dicasAbertas + 1, ocultas: false })}
+                      data-tip="Mostra a próxima dica. O painel conta quantas você usou."
                     >
                       Abrir {nomes[dicasAbertas].toLowerCase()}
                     </button>
                   )}
                   {dicasAbertas > 0 && (
-                    <button className="botao discreto" onClick={() => atualizar({ ocultas: !ocultas })}>
+                    <button
+                      className="botao discreto"
+                      onClick={() => atualizar({ ocultas: !ocultas })}
+                      data-tip={
+                        ocultas
+                          ? "Mostra de novo as dicas que você já abriu."
+                          : "Esconde as dicas abertas para você tentar sem olhar."
+                      }
+                    >
                       {ocultas ? "Mostrar dicas" : "Ocultar dicas"}
                     </button>
                   )}

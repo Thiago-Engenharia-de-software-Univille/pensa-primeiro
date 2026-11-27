@@ -83,6 +83,14 @@ export default function Confira() {
                 className={`${estado} ${!terminou && i === indice ? styles.atual : ""}`}
                 aria-current={!terminou && i === indice ? "step" : undefined}
                 onClick={() => ir(i + 1)}
+                data-tip={
+                  feita
+                    ? acertou(rd)
+                      ? "Você achou o erro. Clique para rever."
+                      : "O erro passou. Clique para rever."
+                    : `Ir para a rodada ${i + 1}`
+                }
+                data-tip-alinha={i === 0 ? "esquerda" : undefined}
               >
                 {i + 1}. {rd.materia}
                 {feita && (
@@ -98,7 +106,8 @@ export default function Confira() {
             className={terminou ? styles.atual : ""}
             onClick={() => ir("fim")}
             disabled={respondidas === 0}
-            title={respondidas === 0 ? "Responda pelo menos uma rodada" : undefined}
+            data-tip={respondidas === 0 ? "Responda pelo menos uma rodada primeiro." : "Ver o placar final."}
+            data-tip-alinha="direita"
           >
             Resultado
           </button>
@@ -162,10 +171,22 @@ export default function Confira() {
 
           {/* navegação sempre visível */}
           <div className={styles.navegacao}>
-            <button className="botao discreto" onClick={anterior} disabled={indice === 0}>
+            <button
+              className="botao discreto"
+              onClick={anterior}
+              disabled={indice === 0}
+              data-tip="Rodada anterior (tecla ←)"
+            >
               ← Anterior
             </button>
-            <button className={respondeu ? "botao" : "botao secundario"} onClick={proxima}>
+            <button
+              className={respondeu ? "botao" : "botao secundario"}
+              onClick={proxima}
+              data-tip={
+                respondeu ? "Próxima rodada (tecla →)" : "Passa para a próxima sem responder (tecla →)"
+              }
+              data-tip-alinha="direita"
+            >
               {indice === rodadas.length - 1 ? "Ver resultado" : respondeu ? "Próxima resposta →" : "Pular →"}
             </button>
           </div>
