@@ -99,8 +99,9 @@ main {
 .voltar {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 6px 14px 6px 10px;
+  gap: 6px;
+  padding: 7px 14px 7px 11px;
+  line-height: 1;
   border: 1px solid var(--linha);
   border-radius: 999px;
   background: var(--papel);
@@ -119,11 +120,13 @@ main {
   outline-offset: 2px;
 }
 
-.voltar span {
+.voltar-seta {
+  display: block;
+  flex-shrink: 0;
   transition: transform 0.15s;
 }
 
-.voltar:hover span {
+.voltar:hover .voltar-seta {
   transform: translateX(-3px);
 }
 
@@ -532,4 +535,114 @@ textarea {
 .nivel-compacto .nivel-opcoes button {
   padding: 4px 12px;
   font-size: 0.85rem;
+}
+
+/* ---------- easter egg: o robô quebra (12 cliques) e um robozinho conserta ---------- */
+
+/* quebrado: corpo murcha, antena tomba */
+.robo.quebra-quebrado .inclina,
+.robo.quebra-conserto .inclina {
+  transform: rotate(-4deg) translateY(6px);
+  transition: transform 0.5s cubic-bezier(0.5, 1.6, 0.6, 1);
+}
+
+.robo.quebra-quebrado .antena,
+.robo.quebra-conserto .antena {
+  animation: pane 0.18s steps(2) infinite;
+}
+
+@keyframes pane {
+  50% { fill: #fff; }
+}
+
+.robo .fumaca circle {
+  fill: #6f6f6f;
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: fumaca 1.6s ease-out infinite;
+}
+
+.robo .fumaca circle:nth-child(2) { animation-delay: 0.4s; }
+.robo .fumaca circle:nth-child(3) { animation-delay: 0.8s; }
+.robo .fumaca circle:nth-child(4) { animation-delay: 1.2s; }
+
+@keyframes fumaca {
+  0% { opacity: 0.85; transform: translate(0, 0) scale(0.7); }
+  100% { opacity: 0; transform: translate(-22px, -70px) scale(2.1); }
+}
+
+.robo .faiscas path {
+  fill: none;
+  stroke: #ffb800;
+  stroke-width: 4;
+  stroke-linecap: round;
+  opacity: 0;
+  animation: faisca 0.5s steps(1) infinite;
+}
+
+.robo .faiscas path:nth-child(2) { animation-delay: 0.17s; stroke: var(--vermelho); }
+.robo .faiscas path:nth-child(3) { animation-delay: 0.33s; }
+
+@keyframes faisca {
+  0%, 60% { opacity: 1; }
+  61%, 100% { opacity: 0; }
+}
+
+/* com o robozinho trabalhando, a fumaça diminui */
+.robo.quebra-conserto .fumaca { opacity: 0.5; transition: opacity 1s; }
+
+/* robozinho: entra pela direita, a chave gira, depois sai */
+.robo .mini {
+  transform-box: view-box;
+  animation: mini-entra 1.1s cubic-bezier(0.3, 1.2, 0.5, 1) both;
+}
+
+.robo.quebra-consertado .mini {
+  animation: mini-sai 1.2s ease-in both;
+}
+
+@keyframes mini-entra {
+  from { transform: translateX(170px); opacity: 0; }
+  to { transform: none; opacity: 1; }
+}
+
+@keyframes mini-sai {
+  0% { transform: none; }
+  20% { transform: translateY(-10px); } /* pulinho de comemoração */
+  40% { transform: none; opacity: 1; }
+  100% { transform: translateX(190px); opacity: 0; }
+}
+
+.robo .mini-corpo {
+  transform-box: view-box;
+  transform-origin: 335px 424px;
+  animation: sacode 0.3s ease-in-out infinite alternate;
+}
+
+@keyframes sacode {
+  to { transform: rotate(2deg); }
+}
+
+.robo .chave {
+  transform-box: view-box;
+  transform-origin: 304px 398px;
+  animation: aperta 0.35s ease-in-out infinite alternate;
+}
+
+@keyframes aperta {
+  from { transform: rotate(-8deg); }
+  to { transform: rotate(14deg); }
+}
+
+.robo.quebra-consertado .chave,
+.robo.quebra-consertado .mini-corpo {
+  animation: none;
+}
+
+.robo .mini-texto { font-size: 15px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .robo .fumaca circle { opacity: 0.5; }
+  .robo .faiscas path { opacity: 1; }
 }

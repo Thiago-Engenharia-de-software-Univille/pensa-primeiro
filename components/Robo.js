@@ -79,6 +79,11 @@ export default function Robo({ className }) {
   const [fala, setFala] = useState(null);
   const [pulando, setPulando] = useState(false);
   const cliques = useRef(0);
+  // easter egg: depois de muitos cliques o robô quebra e um robozinho vem consertar
+  // etapas: null → "quebrado" → "conserto" → "consertado" → null
+  const [quebra, setQuebra] = useState(null);
+  const quebradoRef = useRef(false);
+  const timersQuebra = useRef([]);
   const timerFala = useRef(0);
   const expressarRef = useRef(() => {});
   const id = useId().replace(/:/g, "");
@@ -257,6 +262,14 @@ export default function Robo({ className }) {
 
     function mover(e) {
       if (e.pointerType !== "mouse") return;
+      if (quebradoRef.current) {
+        // quebrado não foge de nada: o braço volta para o lugar e fica parado
+        if (mouse) {
+          mouse = null;
+          agendar();
+        }
+        return;
+      }
       mouse = paraDesenho(e.clientX, e.clientY);
       const agora = performance.now();
       // susto: mouse chegando rápido perto da cabeça
@@ -301,11 +314,51 @@ export default function Robo({ className }) {
     };
   }, []);
 
-  useEffect(() => () => clearTimeout(timerFala.current), []);
+  useEffect(
+    () => () => {
+      clearTimeout(timerFala.current);
+      timersQuebra.current.forEach(clearTimeout);
+    },
+    [],
+  );
+
+  function falar(texto, ms = 2200) {
+    setFala({ texto, n: Date.now() });
+    clearTimeout(timerFala.current);
+    timerFala.current = setTimeout(() => setFala(null), ms);
+  }
+
+  // ---------- easter egg: quebra e conserto ----------
+  const CLIQUES_PARA_QUEBRAR = 12;
+
+  function quebrar() {
+    quebradoRef.current = true;
+    const parado = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const passo = (ms, fn) => timersQuebra.current.push(setTimeout(fn, parado ? ms / 3 : ms));
+    setQuebra("quebrado");
+    expressarRef.current("tonto", 6000);
+    falar("Bzzzt… e-e-erro…", 2000);
+    passo(2200, () => setQuebra("conserto")); // o robozinho entra e conserta
+    passo(5600, () => {
+      setQuebra("consertado");
+      expressarRef.current("feliz", 2200);
+      falar("Valeu! Novinho em folha.", 2400);
+    });
+    passo(7000, () => {
+      setQuebra(null);
+      quebradoRef.current = false;
+      cliques.current = 0;
+    });
+  }
 
   // ---------- clique: pula e fala ----------
   function clicar() {
+    if (quebradoRef.current) return; // quebrado: espera o conserto
     cliques.current += 1;
+    if (cliques.current >= CLIQUES_PARA_QUEBRAR) {
+      quebrar();
+      return;
+    }
     const texto =
       cliques.current % 6 === 0 ? FRASE_INSISTENTE : FRASES[(cliques.current - 1) % FRASES.length];
     setFala({ texto, n: cliques.current });
@@ -321,7 +374,7 @@ export default function Robo({ className }) {
   return (
     <svg
       ref={svgRef}
-      className={`robo ${className ?? ""}`}
+      className={`robo ${quebra ? `quebra-${quebra}` : ""} ${className ?? ""}`}
       data-expressao="neutro"
       viewBox="40 0 390 450"
       role="img"
@@ -458,6 +511,55 @@ export default function Robo({ className }) {
           Z
         </text>
       </g>
+
+      {/* easter egg: fumaça e faíscas saindo da cabeça */}
+      {quebra && quebra !== "consertado" && (
+        <g className="avaria" aria-hidden="true">
+          <g className="fumaca">
+            <circle cx="140" cy="70" r="14" />
+            <circle cx="124" cy="62" r="11" />
+            <circle cx="150" cy="58" r="9" />
+            <circle cx="132" cy="74" r="12" />
+          </g>
+          <g className="faiscas">
+            <path d="M254 112 l14 -10 M258 124 l18 2 M252 134 l12 12" />
+            <path d="M108 150 l-14 8 M112 162 l-16 -4" />
+            <path d="M196 182 l8 12 M168 184 l-8 12" />
+          </g>
+        </g>
+      )}
+
+      {/* o robozinho do conserto entra pela direita, conserta e vai embora */}
+      {(quebra === "conserto" || quebra === "consertado") && (
+        <g className="mini" aria-hidden="true">
+          <g className="mini-corpo">
+            <circle className="peca" cx="318" cy="424" r="9" />
+            <circle className="peca" cx="352" cy="424" r="9" />
+            <rect className="peca" x="304" y="380" width="62" height="40" rx="10" />
+            <rect x="318" y="390" width="34" height="18" rx="5" fill="#1e1e1e" />
+            <circle className="olho" cx="335" cy="399" r="4" />
+            <line className="traco" x1="335" y1="380" x2="335" y2="366" />
+            <circle className="luz" cx="335" cy="362" r="6" />
+            {/* braço com a chave inglesa, apontando para a perna do robô */}
+            <g className="chave">
+              <path className="traco" d="M304 398 L276 386" />
+              <path
+                className="peca"
+                d="M262 376 a9 9 0 1 0 12 12 l6 -6 a9 9 0 1 0 -12 -12 Z"
+                transform="rotate(-20 270 382)"
+              />
+            </g>
+          </g>
+          {quebra === "conserto" && (
+            <g className="mini-fala">
+              <rect className="peca" x="300" y="318" width="118" height="34" rx="12" />
+              <text className="fala-texto mini-texto" x="359" y="340" textAnchor="middle">
+                Deixa comigo!
+              </text>
+            </g>
+          )}
+        </g>
+      )}
 
       {/* balão de fala do clique */}
       {fala && (

@@ -167,6 +167,7 @@ export default function Estudo() {
       materia: pergunta.materia,
       dicas: dicasAbertas,
       resultado: tipo,
+      nivel,
     });
   }
 

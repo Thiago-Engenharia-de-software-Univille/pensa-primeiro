@@ -41,7 +41,8 @@ export default function Voltar() {
   useEffect(() => {
     const caminho = lerCaminho();
     if (caminho.at(-1) === endereco) return; // recarregou a mesma página
-    if (caminho.at(-2) === endereco) caminho.pop(); // voltou um passo
+    if (caminho.at(-2) === endereco)
+      caminho.pop(); // voltou um passo
     else caminho.push(endereco);
     gravarCaminho(caminho);
   }, [endereco]);
@@ -55,7 +56,18 @@ export default function Voltar() {
 
   return (
     <button type="button" className="voltar" onClick={voltar}>
-      <span aria-hidden="true">←</span> Voltar
+      {/* seta desenhada (a "←" de texto fica desalinhada conforme a fonte) */}
+      <svg className="voltar-seta" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true">
+        <path
+          d="M13 8H3.5M7.5 3.5 3 8l4.5 4.5"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.8"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+      Voltar
     </button>
   );
 }

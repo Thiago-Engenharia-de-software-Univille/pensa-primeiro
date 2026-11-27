@@ -65,7 +65,7 @@
 /* barra empilhada: cada parte proporcional à contagem */
 .barra {
   display: flex;
-  gap: 3px;
+  gap: 2px;
   height: 22px;
 }
 
@@ -74,8 +74,10 @@
   min-width: 6px;
 }
 
+/* resultados têm ordem (mais autonomia → menos), então usam uma escala de um tom só,
+   do vermelho escuro ao claro; "ainda não consegui" é a hachura do tom mais claro */
 .sozinho {
-  background: var(--tinta);
+  background: #a3231b;
 }
 
 .dicas {
@@ -83,12 +85,12 @@
 }
 
 .resposta {
-  background: #bdbdbd;
+  background: #ffb1aa;
 }
 
 .travei {
-  background: repeating-linear-gradient(45deg, #bdbdbd 0 3px, transparent 3px 6px);
-  box-shadow: inset 0 0 0 1px #bdbdbd;
+  background: repeating-linear-gradient(45deg, #ffb1aa 0 3px, transparent 3px 6px);
+  box-shadow: inset 0 0 0 1px #ffb1aa;
 }
 
 /* ---------- senso crítico ---------- */
@@ -213,6 +215,361 @@
     max-width: 220px;
     justify-self: center;
     order: -1;
+  }
+
+  .tabela th:nth-child(4),
+  .tabela td:nth-child(4) {
+    display: none;
+  }
+}
+
+/* ---------- resumo ---------- */
+
+.resumo {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(170px, 100%), 1fr));
+  gap: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 2px solid var(--tinta);
+}
+
+.resumo li {
+  display: grid;
+  gap: 4px;
+  align-content: start;
+  padding: 16px 16px 4px 0;
+}
+
+.resumo strong {
+  font-size: 2.6rem;
+  font-weight: 300;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  font-variant-numeric: tabular-nums;
+}
+
+.resumo small {
+  font-size: 1.1rem;
+  color: var(--tinta-suave);
+  letter-spacing: 0;
+}
+
+.resumo span {
+  color: var(--tinta-suave);
+  font-size: 0.92rem;
+}
+
+/* ---------- próximo passo ---------- */
+
+.proximo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px 24px;
+  padding: 20px 22px;
+  border: 1px solid var(--tinta);
+  border-radius: 14px;
+  background: var(--papel);
+}
+
+.proximo > div {
+  display: grid;
+  gap: 4px;
+}
+
+.proximoRotulo {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--vermelho);
+}
+
+/* ---------- últimos 7 dias (colunas empilhadas) ---------- */
+
+.grafico {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  align-items: end;
+  height: 200px;
+  padding-top: 24px;
+}
+
+.linhaBase {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 28px;
+  border-top: 1px solid var(--linha);
+}
+
+.coluna {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  align-content: end;
+  gap: 6px;
+  height: 100%;
+  padding: 0;
+  border: none;
+  background: none;
+  font: inherit;
+  color: inherit;
+  cursor: default;
+}
+
+.coluna:focus-visible {
+  outline: 2px solid var(--vermelho);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+.pilha {
+  display: flex;
+  flex-direction: column-reverse; /* o melhor resultado embaixo, junto da linha de base */
+  gap: 2px;
+  width: min(24px, 60%);
+  border-radius: 4px 4px 0 0;
+  overflow: hidden;
+  transition: filter 0.15s;
+}
+
+.pilha span {
+  min-height: 3px;
+}
+
+.colunaAtiva .pilha {
+  filter: brightness(1.12);
+}
+
+.valorColuna {
+  order: -1;
+  font-size: 0.8rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.rotuloDia {
+  height: 22px;
+  font-size: 0.8rem;
+  color: var(--tinta-suave);
+}
+
+.dica {
+  position: absolute;
+  bottom: calc(100% - 16px);
+  left: 50%;
+  z-index: 2;
+  display: grid;
+  gap: 3px;
+  min-width: 170px;
+  padding: 10px 12px;
+  transform: translateX(-50%);
+  border: 1px solid var(--linha);
+  border-radius: 10px;
+  background: var(--papel);
+  box-shadow: 0 6px 20px rgba(30, 30, 30, 0.12);
+  font-size: 0.85rem;
+  text-align: left;
+  pointer-events: none;
+}
+
+.coluna:first-of-type .dica {
+  left: 0;
+  transform: none;
+}
+
+.coluna:last-of-type .dica {
+  left: auto;
+  right: 0;
+  transform: none;
+}
+
+.dicaTitulo {
+  color: var(--tinta-suave);
+}
+
+.dicaLinha {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.traco {
+  width: 12px;
+  height: 3px;
+  border-radius: 2px;
+}
+
+.tabelaDias summary {
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: var(--tinta-suave);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.tabelaDias[open] summary {
+  margin-bottom: 10px;
+}
+
+/* ---------- por matéria ---------- */
+
+.grupoMateria {
+  display: grid;
+  gap: 8px;
+}
+
+.grupoMateria h3 {
+  font-size: 1.1rem;
+}
+
+.materias {
+  display: grid;
+  gap: 8px;
+  padding: 0;
+  list-style: none;
+}
+
+.materias li {
+  display: grid;
+  grid-template-columns: 120px 1fr auto;
+  align-items: center;
+  gap: 12px;
+}
+
+.nomeMateria {
+  font-size: 0.95rem;
+}
+
+.trilhoMateria {
+  height: 14px;
+}
+
+.trilhoMateria span {
+  display: block;
+  height: 100%;
+  border-radius: 0 4px 4px 0;
+  background: var(--vermelho);
+}
+
+.valorMateria {
+  min-width: 130px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.valorMateria small {
+  font-weight: 400;
+  color: var(--tinta-suave);
+}
+
+/* ---------- nível ---------- */
+
+.niveis {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 0;
+  list-style: none;
+}
+
+.niveis li {
+  display: grid;
+  gap: 2px;
+  min-width: 110px;
+  padding: 12px 16px;
+  border: 1px solid var(--linha);
+  border-radius: 12px;
+  background: var(--papel);
+}
+
+.niveis strong {
+  font-size: 1.8rem;
+  font-weight: 300;
+  line-height: 1;
+}
+
+.niveis span {
+  font-size: 0.9rem;
+  color: var(--tinta-suave);
+}
+
+/* ---------- conquistas ---------- */
+
+.contagemConquistas {
+  margin-left: 8px;
+  font-family: var(--grotesca), system-ui, sans-serif;
+  font-size: 0.95rem;
+  color: var(--tinta-suave);
+}
+
+.conquistas {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(240px, 100%), 1fr));
+  gap: 10px;
+  padding: 0;
+  list-style: none;
+}
+
+.conquistas li {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px;
+  border: 1px dashed var(--linha);
+  border-radius: 12px;
+  color: var(--tinta-suave);
+}
+
+.conquistas li > span:nth-child(2) {
+  display: grid;
+  gap: 2px;
+  font-size: 0.9rem;
+}
+
+.conquistas strong {
+  font-size: 1rem;
+}
+
+.selo {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  border: 2px dashed var(--linha);
+  border-radius: 50%;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.conquistaFeita {
+  border-style: solid !important;
+  border-color: var(--tinta) !important;
+  background: var(--papel);
+  color: var(--tinta) !important;
+}
+
+.conquistaFeita .selo {
+  border: none;
+  background: var(--vermelho);
+  color: #fff;
+}
+
+@media (max-width: 760px) {
+  .materias li {
+    grid-template-columns: 1fr auto;
+  }
+
+  .trilhoMateria {
+    grid-column: 1 / -1;
+    order: 3;
+  }
+
+  .valorMateria {
+    min-width: 0;
   }
 
   .tabela th:nth-child(4),
