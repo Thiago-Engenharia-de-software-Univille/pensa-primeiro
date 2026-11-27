@@ -210,7 +210,8 @@ main {
 .robo[data-expressao="surpreso"] .exp.surpreso,
 .robo[data-expressao="feliz"] .exp.feliz,
 .robo[data-expressao="sonolento"] .exp.sonolento,
-.robo[data-expressao="tonto"] .exp.tonto { opacity: 1; }
+.robo[data-expressao="tonto"] .exp.tonto,
+.robo[data-expressao="girando"] .exp.girando { opacity: 1; }
 
 /* fugindo: antena em alerta */
 .robo.fugindo .antena { animation: alerta 0.5s infinite; }
@@ -755,4 +756,31 @@ textarea {
 .botao.discreto:disabled:hover {
   background: none;
   color: #a5a5a3;
+}
+
+/* tonto de tanto o mouse girar em volta: olhos em espiral rodando e cabeça cambaleando */
+.robo .espiral {
+  stroke-width: 3;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.robo[data-expressao="girando"] .espiral {
+  animation: espiral 0.6s linear infinite;
+}
+
+.robo[data-expressao="girando"] .espiral + .espiral {
+  animation-direction: reverse;
+}
+
+@keyframes espiral {
+  to { transform: rotate(360deg); }
+}
+
+.robo[data-expressao="girando"] .cabeca {
+  animation: tonto 0.7s ease-in-out 4;
+}
+
+.robo[data-expressao="girando"] .antena {
+  animation: alerta 0.3s infinite;
 }

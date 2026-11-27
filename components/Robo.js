@@ -106,6 +106,13 @@ export default function Robo({ className }) {
     let temporaria = null; // { nome, ate }
     let ultimoMovimento = performance.now();
     let ultimaPosicao = null;
+
+    // tontura: soma quanto o mouse girou em volta da cabeça nos últimos segundos
+    const VOLTAS_PARA_TONTEAR = 2.5;
+    const JANELA_GIRO = 5000; // ms
+    let giros = []; // [{ t, delta }] em radianos
+    let ultimoAngulo = null;
+    let tontoAte = 0;
     let expressaoAtual = "";
 
     function mostrar(nome, ms) {
@@ -278,8 +285,38 @@ export default function Robo({ className }) {
         if (velocidade > 3 && !(temporaria && agora < temporaria.ate)) mostrar("surpreso", 700);
       }
       ultimaPosicao = mouse && { p: mouse, t: agora };
+      medirGiro(agora);
       ultimoMovimento = agora;
       agendar();
+    }
+
+    function medirGiro(agora) {
+      if (!mouse) return;
+      const dist = distancia(mouse, CABECA);
+      // só conta giro "em volta" do robô: nem colado na cabeça, nem longe demais
+      if (dist < 50 || dist > 520) {
+        ultimoAngulo = null;
+        return;
+      }
+      const angulo = Math.atan2(mouse.y - CABECA.y, mouse.x - CABECA.x);
+      if (ultimoAngulo !== null) {
+        let delta = angulo - ultimoAngulo;
+        if (delta > Math.PI) delta -= 2 * Math.PI; // passou de 180°: ajusta para o menor caminho
+        if (delta < -Math.PI) delta += 2 * Math.PI;
+        giros.push({ t: agora, delta });
+      }
+      ultimoAngulo = angulo;
+      giros = giros.filter((g) => agora - g.t < JANELA_GIRO);
+      const voltas = Math.abs(giros.reduce((s, g) => s + g.delta, 0)) / (2 * Math.PI);
+      if (voltas >= VOLTAS_PARA_TONTEAR && agora > tontoAte) {
+        tontoAte = agora + 6000; // descansa um pouco antes de poder tontear de novo
+        giros = [];
+        mostrar("girando", 2800);
+        // setFala é estável, então dá para usar aqui dentro do efeito
+        setFala({ texto: "Uooou… tá tudo girando…", n: Date.now() });
+        clearTimeout(timerFala.current);
+        timerFala.current = setTimeout(() => setFala(null), 2600);
+      }
     }
 
     function sair() {
@@ -481,6 +518,16 @@ export default function Robo({ className }) {
                   className="exp tonto traco-rosto"
                   d="M154 114 l14 14 M168 114 l-14 14 M196 114 l14 14 M210 114 l-14 14"
                 />
+                <g className="exp girando">
+                  <path
+                    className="traco-rosto espiral"
+                    d="M161 121 a2 2 0 1 1 3 -2 a5 5 0 1 1 -8 5 a8 8 0 1 1 13 -8"
+                  />
+                  <path
+                    className="traco-rosto espiral"
+                    d="M203 121 a2 2 0 1 1 3 -2 a5 5 0 1 1 -8 5 a8 8 0 1 1 13 -8"
+                  />
+                </g>
               </g>
             </g>
             {/* sobrancelhas */}
@@ -494,7 +541,7 @@ export default function Robo({ className }) {
             <path className="exp desconfiado sonolento traco-rosto" d="M174 148 h16" />
             <circle className="exp surpreso traco-rosto" cx="182" cy="148" r="5" />
             <path className="exp feliz boca-aberta" d="M168 141 h28 q0 13 -14 13 q-14 0 -14 -13 Z" />
-            <path className="exp tonto traco-rosto" d="M168 148 q3.5 -5 7 0 t7 0 t7 0 t7 0" />
+            <path className="exp tonto girando traco-rosto" d="M168 148 q3.5 -5 7 0 t7 0 t7 0 t7 0" />
           </g>
         </g>
       </g>
