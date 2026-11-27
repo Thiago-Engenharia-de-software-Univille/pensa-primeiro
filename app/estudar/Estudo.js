@@ -262,12 +262,8 @@ export default function Estudo() {
                   value={textoLivre}
                   onChange={(e) => setTextoLivre(e.target.value)}
                   placeholder="Ex.: Como calcular a área de um triângulo?"
-                  maxLength={LIMITES.pergunta}
                   autoFocus
                 />
-                <p className={styles.contador}>
-                  {textoLivre.length}/{LIMITES.pergunta}
-                </p>
                 {avisoLivre && (
                   <p className={`${styles.retorno} ${styles.foco}`} role="status">
                     {avisoLivre}

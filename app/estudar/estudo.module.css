@@ -523,13 +523,6 @@
   background: var(--papel);
 }
 
-.contador {
-  margin-top: -8px;
-  font-size: 0.8rem;
-  color: var(--tinta-suave);
-  text-align: right;
-}
-
 /* ---------- dicas ocultas e explicação da primeira vez ---------- */
 
 .dicaOculta {
