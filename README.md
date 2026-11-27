@@ -46,3 +46,8 @@ Para caber no plano gratuito e evitar abuso:
 - campos com tamanho máximo (600 caracteres na tentativa, 200 na pergunta livre) e uma pausa
   curta entre conferências;
 - sem chave ou se a cota acabar, o site volta para o verificador local sem quebrar.
+
+## Licença
+
+Este projeto tem licença dupla: você pode usá-lo sob a **Apache 2.0** ([LICENSE-APACHE](LICENSE-APACHE))
+**ou** sob a **MIT** ([LICENSE-MIT](LICENSE-MIT)), como preferir.
