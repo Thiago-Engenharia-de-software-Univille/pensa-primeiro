@@ -119,7 +119,7 @@ export default function Inicio() {
       {/* ---------- o que dá pra fazer ---------- */}
       <section className={styles.bloco} aria-labelledby="ferramentas">
         <div className={styles.cabecalho}>
-          <h2 id="ferramentas">O que dá para fazer aqui</h2>
+          <h2 id="ferramentas">O que dá para fazer aqui?</h2>
           <p className={styles.nota}>
             É um protótipo: as dicas foram escritas pelo grupo para simular como a IA responderia.
           </p>
@@ -148,7 +148,7 @@ export default function Inicio() {
       {/* ---------- o trabalho ---------- */}
       <section id="trabalho" className={styles.bloco} aria-labelledby="sobre-trabalho">
         <div className={styles.cabecalho}>
-          <h2 id="sobre-trabalho">De onde veio este site</h2>
+          <h2 id="sobre-trabalho">De onde veio este site?</h2>
           <p className={styles.textoTrabalho}>
             O Pensa Primeiro é o protótipo do trabalho <em>Desinteligência Humana</em>, da disciplina de
             Interação Humano-Computador do curso de Engenharia de Software da Univille. A pergunta que guiou
