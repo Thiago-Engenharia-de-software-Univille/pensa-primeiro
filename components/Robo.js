@@ -84,6 +84,7 @@ export default function Robo({ className }) {
   const [quebra, setQuebra] = useState(null);
   const quebradoRef = useRef(false);
   const timersQuebra = useRef([]);
+  // dança do código Konami: false → "dancando" → "saindo" (robozinhos vão embora) → false
   const [dancando, setDancando] = useState(false);
   const timerFala = useRef(0);
   const expressarRef = useRef(() => {});
@@ -369,6 +370,7 @@ export default function Robo({ className }) {
     ];
     let posicao = 0;
     let timer = 0;
+    let timerSaida = 0;
     function tecla(e) {
       if (e.target.closest?.("input, textarea, [contenteditable]")) return;
       // B e A também pela posição da tecla (e.code), para funcionar em qualquer layout de teclado
@@ -388,18 +390,21 @@ export default function Robo({ className }) {
       if (caixa && (caixa.bottom < 0 || caixa.top > innerHeight)) {
         svgRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
       }
-      setDancando(true);
-      expressarRef.current("feliz", 3600);
+      setDancando("dancando");
+      expressarRef.current("feliz", 6200);
       setFala({ texto: "Código aceito! A resposta segue lacrada.", n: Date.now() });
       clearTimeout(timerFala.current);
       timerFala.current = setTimeout(() => setFala(null), 3400);
       clearTimeout(timer);
-      timer = setTimeout(() => setDancando(false), 3600);
+      clearTimeout(timerSaida);
+      timerSaida = setTimeout(() => setDancando("saindo"), 5200); // os dois robozinhos se despedem
+      timer = setTimeout(() => setDancando(false), 6400);
     }
     window.addEventListener("keydown", tecla);
     return () => {
       window.removeEventListener("keydown", tecla);
       clearTimeout(timer);
+      clearTimeout(timerSaida);
     };
   }, []);
 
@@ -463,7 +468,7 @@ export default function Robo({ className }) {
   return (
     <svg
       ref={svgRef}
-      className={`robo ${quebra ? `quebra-${quebra}` : ""} ${dancando ? "dancando" : ""} ${className ?? ""}`}
+      className={`robo ${quebra ? `quebra-${quebra}` : ""} ${dancando ? "dancando" : ""} ${dancando === "saindo" ? "danca-saindo" : ""} ${className ?? ""}`}
       data-expressao="neutro"
       viewBox="40 0 390 450"
       role="img"
@@ -494,13 +499,17 @@ export default function Robo({ className }) {
         onClick={clicar}
       >
         <g className="inclina">
-          {/* pernas */}
-          <path className="contorno" d="M158 320 V404" />
-          <path className="miolo cinza" d="M158 320 V404" />
-          <path className="contorno" d="M206 320 V404" />
-          <path className="miolo" d="M206 320 V404" />
-          <path className="peca" d="M132 402 H174 a14 14 0 0 1 14 14 V430 H132 Z" />
-          <path className="peca" d="M190 402 H232 a14 14 0 0 1 14 14 V430 H190 Z" />
+          {/* pernas (agrupadas só para poderem dançar; o desenho é o mesmo) */}
+          <g className="perna-esq">
+            <path className="contorno" d="M158 320 V404" />
+            <path className="miolo cinza" d="M158 320 V404" />
+            <path className="peca" d="M132 402 H174 a14 14 0 0 1 14 14 V430 H132 Z" />
+          </g>
+          <g className="perna-dir">
+            <path className="contorno" d="M206 320 V404" />
+            <path className="miolo" d="M206 320 V404" />
+            <path className="peca" d="M190 402 H232 a14 14 0 0 1 14 14 V430 H190 Z" />
+          </g>
 
           {/* braço com o cartão: desenhado antes do corpo, para poder se esconder atrás dele */}
           <path ref={contornoRef} className="contorno" />
@@ -520,9 +529,11 @@ export default function Robo({ className }) {
           </g>
 
           {/* braço de trás, solto ao lado do corpo */}
-          <path className="contorno" d="M132 226 Q100 262 106 312" />
-          <path className="miolo cinza" d="M132 226 Q100 262 106 312" />
-          <rect className="peca" x="92" y="306" width="28" height="34" rx="10" />
+          <g className="braco-tras">
+            <path className="contorno" d="M132 226 Q100 262 106 312" />
+            <path className="miolo cinza" d="M132 226 Q100 262 106 312" />
+            <rect className="peca" x="92" y="306" width="28" height="34" rx="10" />
+          </g>
 
           {/* corpo */}
           <rect
@@ -601,18 +612,20 @@ export default function Robo({ className }) {
       {/* notinhas da dança (código Konami) */}
       {dancando && (
         <g className="notas" aria-hidden="true">
-          <text x="92" y="120">
-            ♪
-          </text>
-          <text x="270" y="196">
-            ♫
-          </text>
-          <text x="80" y="210">
-            ♪
-          </text>
-          <text x="282" y="290">
-            ♫
-          </text>
+          {[
+            [70, 130, "♪"],
+            [290, 200, "♫"],
+            [60, 240, "♫"],
+            [300, 300, "♪"],
+            [110, 60, "♬"],
+            [250, 40, "♪"],
+            [40, 330, "♪"],
+            [330, 120, "♬"],
+          ].map(([x, y, n], i) => (
+            <text key={i} x={x} y={y} style={{ "--atraso": `${i * 0.18}s` }}>
+              {n}
+            </text>
+          ))}
         </g>
       )}
 
@@ -648,34 +661,15 @@ export default function Robo({ className }) {
 
       {/* o robozinho do conserto entra pela direita, conserta e vai embora */}
       {(quebra === "conserto" || quebra === "consertado") && (
-        <g className="mini" aria-hidden="true">
-          <g className="mini-corpo">
-            <circle className="peca" cx="318" cy="424" r="9" />
-            <circle className="peca" cx="352" cy="424" r="9" />
-            <rect className="peca" x="304" y="380" width="62" height="40" rx="10" />
-            <rect x="318" y="390" width="34" height="18" rx="5" fill="#1e1e1e" />
-            <circle className="olho" cx="335" cy="399" r="4" />
-            <line className="traco" x1="335" y1="380" x2="335" y2="366" />
-            <circle className="luz" cx="335" cy="362" r="6" />
-            {/* braço com a chave inglesa, apontando para a perna do robô */}
-            <g className="chave">
-              <path className="traco" d="M304 398 L276 386" />
-              <path
-                className="peca"
-                d="M262 376 a9 9 0 1 0 12 12 l6 -6 a9 9 0 1 0 -12 -12 Z"
-                transform="rotate(-20 270 382)"
-              />
-            </g>
-          </g>
-          {quebra === "conserto" && (
-            <g className="mini-fala">
-              <rect className="peca" x="300" y="318" width="118" height="34" rx="12" />
-              <text className="fala-texto mini-texto" x="359" y="340" textAnchor="middle">
-                Deixa comigo!
-              </text>
-            </g>
-          )}
-        </g>
+        <MiniRobo fala={quebra === "conserto" ? "Deixa comigo!" : null} />
+      )}
+
+      {/* código Konami: dois robozinhos de manutenção dançam junto, um de cada lado */}
+      {dancando && (
+        <>
+          <MiniRobo className="dancarino" />
+          <MiniRobo className="dancarino dancarino-esq" espelhado />
+        </>
       )}
 
       {/* balão de fala do clique */}
@@ -691,4 +685,41 @@ export default function Robo({ className }) {
       )}
     </svg>
   );
+}
+
+// Robozinho de manutenção (o mesmo do conserto). "espelhado" vira para o outro lado:
+// usado no lado esquerdo do robô na dança.
+function MiniRobo({ fala = null, className = "", espelhado = false }) {
+  const robozinho = (
+    <g className={`mini ${className}`} aria-hidden="true">
+      <g className="mini-corpo">
+        <circle className="peca" cx="318" cy="424" r="9" />
+        <circle className="peca" cx="352" cy="424" r="9" />
+        <rect className="peca" x="304" y="380" width="62" height="40" rx="10" />
+        <rect x="318" y="390" width="34" height="18" rx="5" fill="#1e1e1e" />
+        <circle className="olho" cx="335" cy="399" r="4" />
+        <line className="traco" x1="335" y1="380" x2="335" y2="366" />
+        <circle className="luz" cx="335" cy="362" r="6" />
+        {/* braço com a chave inglesa */}
+        <g className="chave">
+          <path className="traco" d="M304 398 L276 386" />
+          <path
+            className="peca"
+            d="M262 376 a9 9 0 1 0 12 12 l6 -6 a9 9 0 1 0 -12 -12 Z"
+            transform="rotate(-20 270 382)"
+          />
+        </g>
+      </g>
+      {fala && (
+        <g className="mini-fala">
+          <rect className="peca" x="300" y="318" width="118" height="34" rx="12" />
+          <text className="fala-texto mini-texto" x="359" y="340" textAnchor="middle">
+            {fala}
+          </text>
+        </g>
+      )}
+    </g>
+  );
+  // espelha em volta do centro do robô principal: o robozinho da direita aparece à esquerda
+  return espelhado ? <g transform="translate(378 0) scale(-1 1)">{robozinho}</g> : robozinho;
 }
