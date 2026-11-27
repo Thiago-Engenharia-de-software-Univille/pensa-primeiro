@@ -1,5 +1,6 @@
 import { Inter_Tight, Marcellus } from "next/font/google";
 import Link from "next/link";
+import { Suspense } from "react";
 import CabecaRobo from "@/components/CabecaRobo";
 import Voltar from "@/components/Voltar";
 import { APRESENTACAO } from "@/lib/links";
@@ -38,7 +39,9 @@ export default function RootLayout({ children }) {
           </nav>
         </header>
         <main>
-          <Voltar />
+          <Suspense fallback={null}>
+            <Voltar />
+          </Suspense>
           {children}
         </main>
         <footer className="rodape">

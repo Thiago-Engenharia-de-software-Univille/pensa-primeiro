@@ -374,3 +374,57 @@
   font-size: 0.85rem;
   color: var(--tinta-suave);
 }
+
+.andamento {
+  display: table;
+  margin-top: 6px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--tinta);
+  color: var(--papel);
+  font-size: 0.75rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+/* ---------- resultado (veredito) ---------- */
+
+.veredito {
+  display: grid;
+  gap: 10px;
+  padding: 22px 24px;
+  border: 2px solid var(--tinta);
+  border-radius: 16px;
+  background: var(--papel);
+  animation: chegar 0.35s ease-out;
+}
+
+.vereditoCerto {
+  border-color: var(--vermelho);
+}
+
+.veredito h2 {
+  font-size: clamp(1.8rem, 4vw, 2.4rem);
+}
+
+.selo {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.vereditoCerto .selo {
+  color: var(--vermelho);
+}
+
+.porque {
+  padding-left: 14px;
+  border-left: 4px solid var(--vermelho);
+  font-weight: 500;
+}
+
+/* atalho de teclado: some em telas de toque */
+@media (hover: none) {
+  .soTeclado {
+    display: none;
+  }
+}

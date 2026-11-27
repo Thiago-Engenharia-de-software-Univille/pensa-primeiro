@@ -8,8 +8,7 @@ import styles from "./painel.module.css";
 
 const ORDEM = ["sozinho", "dicas", "resposta", "travei"];
 
-const formatarData = (iso) =>
-  new Date(iso).toLocaleDateString("pt-BR", { day: "numeric", month: "short" });
+const formatarData = (iso) => new Date(iso).toLocaleDateString("pt-BR", { day: "numeric", month: "short" });
 
 export default function Painel() {
   const historico = useHistorico();
@@ -65,7 +64,9 @@ export default function Painel() {
 
 function Estudo({ historico }) {
   const total = historico.length;
-  const contagem = Object.fromEntries(ORDEM.map((t) => [t, historico.filter((s) => s.resultado === t).length]));
+  const contagem = Object.fromEntries(
+    ORDEM.map((t) => [t, historico.filter((s) => s.resultado === t).length]),
+  );
   // "Autonomia" = resolveu sem ver a resposta (sozinho ou só com dicas)
   const autonomia = Math.round(((contagem.sozinho + contagem.dicas) / total) * 100);
   const mediaDicas = (historico.reduce((soma, s) => soma + s.dicas, 0) / total).toLocaleString("pt-BR", {
@@ -143,7 +144,8 @@ function Estudo({ historico }) {
 function SemEstudo() {
   return (
     <p className={styles.sub}>
-      Você ainda não estudou nenhuma pergunta. Quando estudar, aqui aparece quanto resolveu sem abrir a resposta.
+      Você ainda não estudou nenhuma pergunta. Quando estudar, aqui aparece quanto resolveu sem abrir a
+      resposta.
     </p>
   );
 }
@@ -157,7 +159,9 @@ function SensoCritico({ conferencias }) {
     <div className={styles.divisao}>
       <h2 className={styles.subtitulo}>Senso crítico</h2>
       <p className={styles.critico}>
-        <strong>{achados}</strong> de {conferencias.length} erros da IA encontrados no Confira a IA.
+        <strong>{achados}</strong> de {conferencias.length} {conferencias.length === 1 ? "erro" : "erros"} da
+        IA
+        {achados === 1 ? " encontrado" : " encontrados"} no Confira a IA.
       </p>
       <ol className={styles.sequencia} aria-label="Últimas rodadas, da mais antiga para a mais nova">
         {recentes.map((c) => (

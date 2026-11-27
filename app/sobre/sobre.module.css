@@ -50,7 +50,7 @@
 
 .dados {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr));
   gap: 32px;
   padding: 0;
   list-style: none;
@@ -69,7 +69,8 @@
 }
 
 .medidor {
-  width: 120px;
+  width: 110px;
+  flex-shrink: 0;
 }
 
 .medida strong {
