@@ -152,7 +152,7 @@
 
 .colunaTentativa {
   display: grid;
-  gap: 10px;
+  gap: 14px; /* igual ao .blocoTentativa: o botão de conferir não muda de lugar ao trocar de etapa */
   position: sticky;
   top: 24px;
 }
@@ -528,4 +528,32 @@
   font-size: 0.8rem;
   color: var(--tinta-suave);
   text-align: right;
+}
+
+/* ---------- dicas ocultas e explicação da primeira vez ---------- */
+
+.dicaOculta {
+  width: 100%;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  background: none;
+}
+
+.dicaOculta:hover {
+  border-color: var(--tinta-suave);
+  color: var(--tinta);
+}
+
+.explicacao {
+  display: grid;
+  gap: 8px;
+  justify-items: start;
+  padding: 14px 16px;
+  border: 1px solid var(--tinta);
+  border-left: 4px solid var(--vermelho);
+  border-radius: 10px;
+  background: var(--papel);
+  font-size: 0.95rem;
+  animation: chegar 0.35s ease-out;
 }

@@ -54,6 +54,20 @@ export default function Estudo() {
   const [textoLivre, setTextoLivre] = useState("");
   const [avisoLivre, setAvisoLivre] = useState(null);
   const [conferindo, setConferindo] = useState(false);
+  // a explicação das dicas aparece só na primeira vez (guardado no navegador)
+  const [explicou, setExplicou] = useState(() => {
+    try {
+      return localStorage.getItem("pensa-primeiro:explicou-dicas") === "1";
+    } catch {
+      return false;
+    }
+  });
+  function marcarExplicado() {
+    setExplicou(true);
+    try {
+      localStorage.setItem("pensa-primeiro:explicou-dicas", "1");
+    } catch {}
+  }
   const nivel = useNivel();
   const ajuda = NIVEIS[nivel];
 
@@ -68,7 +82,15 @@ export default function Estudo() {
         : null;
 
   const sessao = (pergunta && sessoes[pergunta.id]) || SESSAO_NOVA;
-  const { tentativa, dicas: dicasAbertas, respostaVista, retorno, resultado, escrita = [] } = sessao;
+  const {
+    tentativa,
+    dicas: dicasAbertas,
+    respostaVista,
+    retorno,
+    resultado,
+    escrita = [],
+    ocultas = false,
+  } = sessao;
   const etapa = !pergunta ? "escolher" : resultado ? "fim" : params.get("e") === "dicas" ? "dicas" : "tentar";
   const indiceEtapa = { escolher: 0, tentar: 1, dicas: 2, fim: 3 }[etapa];
 
@@ -355,12 +377,6 @@ export default function Estudo() {
             placeholder="Eu acho que…"
             autoFocus
           />
-          <Retorno retorno={retorno} />
-          <Escrita
-            sugestoes={escrita}
-            aoAplicar={aplicarEscrita}
-            aoDispensar={() => atualizar({ escrita: [] })}
-          />
           <div className="acoes">
             <button className="botao" disabled={!tentativaValida || conferindo} onClick={conferir}>
               {conferindo ? "Conferindo…" : "Conferir minha resposta"}
@@ -395,6 +411,12 @@ export default function Estudo() {
           ) : (
             <p className={`${styles.nota} ${styles.soTeclado}`}>Dica: Ctrl+Enter também confere.</p>
           )}
+          <Retorno retorno={retorno} />
+          <Escrita
+            sugestoes={escrita}
+            aoAplicar={aplicarEscrita}
+            aoDispensar={() => atualizar({ escrita: [] })}
+          />
         </div>
       )}
 
@@ -416,6 +438,35 @@ export default function Estudo() {
               maxLength={LIMITES.tentativa}
               readOnly={etapa === "fim"}
             />
+            {etapa === "dicas" && (
+              <div className="acoes">
+                {!respostaVista ? (
+                  <>
+                    <button className="botao" disabled={conferindo} onClick={conferir}>
+                      {conferindo ? "Conferindo…" : "Conferir minha resposta"}
+                    </button>
+                    {retorno && retorno.status !== "certo" && (
+                      <button
+                        className="botao discreto"
+                        onClick={() => terminar(dicasAbertas === 0 ? "sozinho" : "dicas")}
+                        title="A conferência automática pode se enganar"
+                      >
+                        Acho que acertei
+                      </button>
+                    )}
+                    {semResposta && todasAbertas && (
+                      <button className="botao discreto" onClick={() => terminar("travei")}>
+                        Ainda não consegui
+                      </button>
+                    )}
+                  </>
+                ) : (
+                  <button className="botao" onClick={() => terminar("resposta")}>
+                    Entendi, terminar
+                  </button>
+                )}
+              </div>
+            )}
             {etapa === "dicas" && <Retorno retorno={retorno} />}
             {etapa === "dicas" && (
               <Escrita
@@ -427,9 +478,37 @@ export default function Estudo() {
           </div>
 
           <div className={styles.conversa}>
+            {etapa === "dicas" && !explicou && (
+              <div className={styles.explicacao} role="note">
+                <p>
+                  <strong>
+                    {retorno && retorno.status !== "certo"
+                      ? "Ainda não foi dessa vez, e tudo bem."
+                      : "Aqui ficam as dicas."}
+                  </strong>{" "}
+                  {retorno && retorno.status !== "certo" && "Por isso as dicas apareceram aqui do lado. "}
+                  Elas começam fechadas e só abrem quando você pedir, uma de cada vez. A resposta fica lacrada
+                  até o fim. Dá para ocultar as dicas de novo quando quiser, e o seu painel mostra quantas
+                  você usou.
+                </p>
+                <button type="button" className={styles.escritaBotao} onClick={marcarExplicado}>
+                  Entendi
+                </button>
+              </div>
+            )}
             <ol className={styles.dicas}>
               {dicas.map((texto, i) =>
-                i < dicasVisiveis ? (
+                i < dicasVisiveis && ocultas && !terminou ? (
+                  <li key={i}>
+                    <button
+                      type="button"
+                      className={`${styles.dicaFechada} ${styles.dicaOculta}`}
+                      onClick={() => atualizar({ ocultas: false })}
+                    >
+                      {nomes[i]} oculta · mostrar
+                    </button>
+                  </li>
+                ) : i < dicasVisiveis ? (
                   <li key={i} className={styles.dica}>
                     <CabecaRobo tamanho={36} className={styles.avatar} />
                     <div className={styles.balao}>
@@ -477,38 +556,21 @@ export default function Estudo() {
                       ? "Corrija a tentativa e confira de novo. Se quiser uma ajuda, abra uma dica."
                       : "Corrija a tentativa e confira de novo."
                     : dicasAbertas === 0
-                      ? "Quer a primeira dica ou já resolveu?"
-                      : "Corrigiu a tentativa? Confira de novo ou abra a próxima dica."}
+                      ? "Quer uma dica? Ela abre só quando você pedir."
+                      : "Leu a dica? Corrija a tentativa e confira."}
                 </p>
                 <div className="acoes">
                   {!todasAbertas && (
-                    <button className="botao" onClick={() => atualizar({ dicas: dicasAbertas + 1 })}>
+                    <button
+                      className="botao secundario"
+                      onClick={() => atualizar({ dicas: dicasAbertas + 1, ocultas: false })}
+                    >
                       Abrir {nomes[dicasAbertas].toLowerCase()}
                     </button>
                   )}
-                  {!respostaVista ? (
-                    <>
-                      <button className="botao secundario" disabled={conferindo} onClick={conferir}>
-                        {conferindo ? "Conferindo…" : "Conferir minha resposta"}
-                      </button>
-                      {retorno && retorno.status !== "certo" && (
-                        <button
-                          className="botao discreto"
-                          onClick={() => terminar(dicasAbertas === 0 ? "sozinho" : "dicas")}
-                          title="A conferência automática pode se enganar"
-                        >
-                          Acho que acertei
-                        </button>
-                      )}
-                      {semResposta && todasAbertas && (
-                        <button className="botao discreto" onClick={() => terminar("travei")}>
-                          Ainda não consegui
-                        </button>
-                      )}
-                    </>
-                  ) : (
-                    <button className="botao" onClick={() => terminar("resposta")}>
-                      Entendi, terminar
+                  {dicasAbertas > 0 && (
+                    <button className="botao discreto" onClick={() => atualizar({ ocultas: !ocultas })}>
+                      {ocultas ? "Mostrar dicas" : "Ocultar dicas"}
                     </button>
                   )}
                 </div>
