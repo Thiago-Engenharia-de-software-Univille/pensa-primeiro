@@ -5,9 +5,9 @@
 Este documento descreve o site/sistema que o grupo vai desenvolver a partir da pesquisa apresentada em
 **Desinteligência Humana** (IA × IHC — Engenharia de Software, Univille 2026).
 
-> **Escopo atual: protótipo simples.** Não é um sistema completo. Estão implementadas 3 telas (Início, Estudar
-> e Painel), com perguntas de exemplo e dicas escritas pelo grupo simulando a IA. O modo "Confira a IA" e a
-> integração com uma IA de verdade ficam como ideias futuras.
+> **Escopo atual: protótipo simples.** Não é um sistema completo. Estão implementadas 5 telas: Início, Estudar
+> (6 perguntas de exemplo com verificador de respostas, e pergunta livre com dicas de método), Confira a IA (4 rodadas), Painel e Sobre. As
+> dicas foram escritas pelo grupo para simular a IA. A integração com uma IA de verdade fica como ideia futura.
 
 ---
 
@@ -121,20 +121,27 @@ app/
 ├── layout.js            # cabeçalho e fontes
 ├── globals.css          # cores, botões, cartões
 ├── page.js              # Início
-├── estudar/Estudo.js    # escolher pergunta → tentativa → dicas → resultado
-└── painel/Painel.js     # medidor de autonomia e últimas perguntas
+├── estudar/Estudo.js    # escolher pergunta (ou escrever a sua) → tentativa → dicas → resultado
+├── confira/Confira.js   # achar a frase errada numa resposta da IA
+├── painel/Painel.js     # medidor de autonomia, últimas perguntas e senso crítico
+└── sobre/page.js        # a pesquisa por trás do site
+components/              # Robo, CabecaRobo, Medidor, Etapas, Voltar
 lib/
-├── perguntas.js         # perguntas de exemplo e dicas
+├── perguntas.js         # perguntas de exemplo, dicas e dicas de método
+├── confira.js           # rodadas do Confira a IA
+├── verificador.js       # confere a tentativa (números e palavras-chave): certo, quase ou errado
+├── gemini.js            # conferência com o Gemini no servidor (cache e limites do plano gratuito)
+├── conferirIA.js        # lado do navegador da conferência com IA
 └── historico.js         # leitura e gravação no localStorage
 ```
 
 ## 8. Etapas
 
 1. **Protótipo no Figma:** telas da seção 4 (prompt abaixo).
-2. **Protótipo navegável (feito):** Início, Estudar e Painel com dicas simuladas.
+2. **Protótipo navegável (feito):** Início, Estudar, Confira a IA, Painel e Sobre, com dicas simuladas.
 3. **Teste com usuários:** os mesmos perfis da entrevista, para validar se o fluxo incentiva a pensar.
 4. **Publicação:** Vercel.
-5. *Futuro (opcional):* IA de verdade e modo "Confira a IA".
+5. *Futuro (opcional):* IA de verdade nas dicas e na pergunta livre.
 
 ## 9. Prompt para o protótipo no Figma
 

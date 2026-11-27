@@ -1,71 +1,376 @@
+.tela {
+  display: grid;
+  gap: 28px;
+  padding-top: 24px;
+}
+
+.titulo {
+  font-size: clamp(2.6rem, 6vw, 4.2rem);
+  letter-spacing: -0.02em;
+}
+
 .nota {
+  display: block;
+  font-weight: 400;
   color: var(--tinta-suave);
   font-size: 0.95rem;
 }
 
-.grade {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 16px;
+.materia {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--vermelho);
+}
+
+/* ---------- escolher: lista de fichas ---------- */
+
+.opcoes {
+  padding: 0;
+  list-style: none;
+  border-bottom: 1px solid var(--linha);
 }
 
 .opcao {
   display: grid;
-  gap: 10px;
-  align-content: start;
-  text-align: left;
+  grid-template-columns: 140px 1fr;
+  gap: 24px;
+  width: 100%;
+  padding: 26px 8px;
+  border: none;
+  border-top: 1px solid var(--linha);
+  background: none;
   font: inherit;
   color: inherit;
+  text-align: left;
   cursor: pointer;
-  transition: border-color 0.15s, transform 0.15s;
 }
 
 .opcao:hover {
-  border-color: var(--vermelho);
-  transform: translateY(-2px);
+  background: var(--papel);
+}
+
+.opcao:hover .enunciadoOpcao {
+  text-decoration: underline;
+  text-decoration-color: var(--vermelho);
+  text-underline-offset: 6px;
+}
+
+/* enunciados na grotesca: os números da Marcellus parecem letras (0 vira O) */
+.enunciadoOpcao {
+  font-size: 1.3rem;
+  font-weight: 500;
+  letter-spacing: -0.015em;
+  line-height: 1.35;
+  max-width: 38ch;
+}
+
+/* pergunta livre: última linha da lista, tracejada para parecer "em branco" */
+.livre .opcao {
+  border-top-style: dashed;
+}
+
+.livre .opcao .enunciadoOpcao {
+  color: var(--tinta-suave);
+}
+
+.formLivre {
+  display: grid;
+  gap: 14px;
+  padding: 26px 8px;
+  border-top: 1px dashed var(--linha);
+  max-width: 720px;
+}
+
+.campoLivre {
+  min-height: 96px;
+  font-size: 1.1rem;
+}
+
+.barraTopo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 24px;
+}
+
+/* ---------- pergunta ---------- */
+
+.pergunta {
+  display: grid;
+  gap: 10px;
 }
 
 .enunciado {
-  font-size: clamp(1.6rem, 4vw, 2.2rem);
-  max-width: 760px;
+  font-family: var(--grotesca), system-ui, sans-serif;
+  font-weight: 500;
+  font-size: clamp(1.6rem, 3.6vw, 2.3rem);
+  line-height: 1.2;
+  max-width: 30ch;
+  letter-spacing: -0.025em;
 }
 
-.tentativa {
+/* ---------- folha de caderno ---------- */
+
+.rotuloFolha {
   display: grid;
-  gap: 8px;
-  border-left: 4px solid var(--tinta);
+  gap: 2px;
+  font-weight: 600;
+}
+
+.folha {
+  min-height: 224px;
+  padding: 7px 18px 0 60px;
+  border: 1px solid var(--linha);
+  border-radius: 6px;
+  line-height: 32px;
+  font-size: 1.05rem;
+  background:
+    linear-gradient(90deg, transparent 43px, rgba(255, 74, 74, 0.5) 43px 45px, transparent 45px),
+    repeating-linear-gradient(#fff 0 31px, #dfe3ea 31px 32px);
+  background-attachment: local;
+}
+
+.folha[readonly] {
+  color: var(--tinta-suave);
+}
+
+.blocoTentativa {
+  display: grid;
+  gap: 14px;
+  max-width: 720px;
+}
+
+/* ---------- dicas: folha de um lado, robô do outro ---------- */
+
+.mesa {
+  display: grid;
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+  gap: 40px;
+  align-items: start;
+}
+
+.colunaTentativa {
+  display: grid;
+  gap: 10px;
+  position: sticky;
+  top: 24px;
+}
+
+.conversa {
+  display: grid;
+  gap: 18px;
 }
 
 .dicas {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 16px;
+  gap: 14px;
   padding: 0;
   list-style: none;
 }
 
-.dicas li {
+.dica {
   display: grid;
-  gap: 8px;
-  align-content: start;
+  grid-template-columns: 36px 1fr;
+  gap: 12px;
+  align-items: start;
+  animation: chegar 0.35s ease-out;
 }
 
-.aberta {
-  border-top: 4px solid var(--vermelho);
+.avatar {
+  margin-top: 4px;
 }
 
-.fechada {
-  border-style: dashed;
-  background: transparent;
+.balao {
+  display: grid;
+  gap: 6px;
+  padding: 16px 20px;
+  background: var(--papel);
+  border: 1px solid var(--tinta);
+  border-radius: 4px 16px 16px 16px;
 }
 
+.nomeDica {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--vermelho);
+}
+
+.dicaFechada {
+  margin-left: 48px;
+  padding: 14px 20px;
+  border: 2px dashed var(--linha);
+  border-radius: 16px;
+  color: var(--tinta-suave);
+  font-size: 0.95rem;
+}
+
+/* resposta lacrada, como o cartão que o robô segura na página inicial */
 .resposta {
+  position: relative;
   display: grid;
-  gap: 8px;
-  background: var(--vermelho-claro);
+  gap: 6px;
+  margin-left: 48px;
+  padding: 18px 20px 28px;
+  background: #fff;
+  border: 2px solid var(--tinta);
+  border-radius: 12px;
+  transform: rotate(-0.6deg);
+}
+
+.resposta p {
+  filter: blur(5px);
+  user-select: none;
+}
+
+.resposta.aberta {
+  transform: none;
   border-color: var(--vermelho);
+  background: var(--vermelho-claro);
+  animation: chegar 0.35s ease-out;
+}
+
+.resposta.aberta p {
+  filter: none;
+  user-select: auto;
+  font-size: 1.3rem;
+  font-weight: 600;
+}
+
+.lacre {
+  position: absolute;
+  right: 18px;
+  bottom: -16px;
+  padding: 6px 18px;
+  border: 2px solid var(--tinta);
+  border-radius: 999px;
+  background: var(--vermelho);
+  color: #fff;
+  font: inherit;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.lacre:disabled {
+  cursor: not-allowed;
+  opacity: 0.85;
+}
+
+.lacre:not(:disabled):hover {
+  background: var(--tinta);
+}
+
+.controles {
+  display: grid;
+  gap: 12px;
+  margin: 12px 0 0 48px;
+  font-weight: 500;
+}
+
+.fim {
+  display: grid;
+  gap: 12px;
+  margin: 12px 0 0 48px;
+  padding-top: 20px;
+  border-top: 2px solid var(--tinta);
 }
 
 .fim h2 {
-  font-size: 2rem;
+  font-size: 2.2rem;
+}
+
+@keyframes chegar {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dica,
+  .resposta.aberta {
+    animation: none;
+  }
+}
+
+/* ---------- celular ---------- */
+
+@media (max-width: 760px) {
+  .opcao {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+
+  .mesa {
+    grid-template-columns: 1fr;
+  }
+
+  .colunaTentativa {
+    position: static;
+  }
+
+  .folha {
+    min-height: 160px;
+  }
+
+  .dicaFechada,
+  .resposta,
+  .controles,
+  .fim {
+    margin-left: 0;
+  }
+}
+
+/* ---------- verificador ---------- */
+
+.retorno {
+  padding: 12px 16px;
+  border-radius: 10px;
+  font-size: 0.98rem;
+  animation: chegar 0.25s ease-out;
+}
+
+.quase {
+  border: 2px dashed var(--vermelho);
+  background: #fff;
+}
+
+.errado {
+  border: 1px solid var(--linha);
+  background: var(--papel);
+}
+
+.retorno strong {
+  margin-right: 4px;
+}
+
+.quase strong {
+  color: var(--vermelho);
+}
+
+.confirmado {
+  padding-left: 14px;
+  border-left: 4px solid var(--vermelho);
+  font-weight: 500;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .retorno {
+    animation: none;
+  }
+}
+
+.retorno p + p {
+  margin-top: 4px;
+}
+
+.indisponivel {
+  border: 1px dashed var(--linha);
+  background: var(--papel);
+}
+
+.fonteRetorno {
+  font-size: 0.85rem;
+  color: var(--tinta-suave);
 }

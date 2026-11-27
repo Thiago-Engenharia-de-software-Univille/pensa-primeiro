@@ -53,13 +53,16 @@ a {
   text-decoration: none;
 }
 
-.marca span {
-  color: var(--vermelho);
+
+.topo {
+  flex-wrap: wrap;
+  gap: 12px 24px;
 }
 
 .menu {
   display: flex;
-  gap: 20px;
+  flex-wrap: wrap;
+  gap: 6px 20px;
   font-size: 0.95rem;
 }
 
@@ -88,9 +91,277 @@ main {
 }
 
 .rotulo {
-  font-size: 0.75rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--tinta-suave);
+}
+
+.voltar {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px 6px 10px;
+  border: 1px solid var(--linha);
+  border-radius: 999px;
+  background: var(--papel);
+  color: var(--tinta);
+  font: inherit;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+
+.voltar:hover {
+  border-color: var(--tinta);
+}
+
+.voltar:focus-visible {
+  outline: 2px solid var(--vermelho);
+  outline-offset: 2px;
+}
+
+.voltar span {
+  transition: transform 0.15s;
+}
+
+.voltar:hover span {
+  transform: translateX(-3px);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* ---------- robô (mesmo traço da apresentação) ---------- */
+
+.robo { overflow: visible; }
+.robo .contorno { fill: none; stroke: var(--tinta); stroke-width: 27; stroke-linecap: round; stroke-linejoin: round; }
+.robo .miolo { fill: none; stroke: #fff; stroke-width: 16; stroke-linecap: round; stroke-linejoin: round; }
+.robo .miolo.cinza { stroke: #bdbdbd; }
+.robo .peca { fill: #fff; stroke: var(--tinta); stroke-width: 5; stroke-linejoin: round; }
+.robo .traco { fill: none; stroke: var(--tinta); stroke-width: 5; stroke-linecap: round; }
+.robo .traco.fino { stroke-width: 6; stroke: #9a9a9a; }
+.robo .luz { fill: var(--vermelho); stroke: var(--tinta); stroke-width: 5; }
+.robo .olho { fill: #fff; }
+.robo .traco-rosto { fill: none; stroke: #fff; stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; }
+.robo .boca-aberta { fill: #fff; }
+.robo .lacre { fill: var(--vermelho); stroke: var(--tinta); stroke-width: 4; }
+.robo .lacre-texto { fill: #fff; font: 600 15px var(--grotesca), system-ui, sans-serif; }
+.robo .fala-texto { fill: var(--tinta); font: 600 18px var(--grotesca), system-ui, sans-serif; }
+.robo .antena { animation: sinal 3.2s infinite; }
+
+/* olhos e cabeça seguem o mouse (variáveis definidas em components/Robo.js) */
+.robo .olhos {
+  transform: translate(var(--olho-x, 0), var(--olho-y, 0));
+  transition: transform 0.12s ease-out;
+}
+.robo .piscar {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: piscar 3.6s infinite;
+}
+.robo .cabeca {
+  transform-box: view-box;
+  transform-origin: 182px 186px;
+  /* a mola em components/Robo.js já suaviza: sem transition aqui, para não atrasar duas vezes */
+  transform: translateX(var(--cabeca-x, 0px)) rotate(var(--cabeca, 0deg));
+}
+
+.robo .sombra { fill: var(--tinta); opacity: 0.08; }
+
+/* o corpo se inclina para longe do mouse */
+.robo .inclina {
+  transform-box: view-box;
+  transform-origin: 182px 430px;
+  transform: rotate(var(--inclina, 0deg));
+  transition: transform 0.3s ease-out;
+}
+
+/* clique: pulo com "squash and stretch" */
+.robo .pulo {
+  cursor: pointer;
+  transform-box: view-box;
+  transform-origin: 182px 430px;
+}
+.robo .pulo.pulando { animation: pulo 0.55s cubic-bezier(0.3, 0, 0.4, 1); }
+
+@keyframes pulo {
+  0% { transform: none; }
+  18% { transform: scale(1.05, 0.93); }
+  50% { transform: translateY(-36px) scale(0.97, 1.04); }
+  82% { transform: translateY(0) scale(1.04, 0.96); }
+  100% { transform: none; }
+}
+
+/* ---------- expressões (data-expressao definido em components/Robo.js) ---------- */
+
+.robo .exp { opacity: 0; transition: opacity 0.15s; }
+.robo[data-expressao="neutro"] .exp.neutro,
+.robo[data-expressao="preocupado"] .exp.preocupado,
+.robo[data-expressao="bravo"] .exp.bravo,
+.robo[data-expressao="desconfiado"] .exp.desconfiado,
+.robo[data-expressao="surpreso"] .exp.surpreso,
+.robo[data-expressao="feliz"] .exp.feliz,
+.robo[data-expressao="sonolento"] .exp.sonolento,
+.robo[data-expressao="tonto"] .exp.tonto { opacity: 1; }
+
+/* fugindo: antena em alerta */
+.robo.fugindo .antena { animation: alerta 0.5s infinite; }
+.robo[data-expressao="bravo"] .antena { animation: alerta 0.25s infinite; }
+
+/* feliz: antena pisca contente */
+.robo[data-expressao="feliz"] .antena { animation: alerta 0.35s 3; }
+
+/* sonolento: antena apagada e os "z" subindo */
+.robo[data-expressao="sonolento"] .antena { animation: none; fill: #fff; }
+.robo .zz text { fill: var(--tinta-suave); font: 600 20px var(--grotesca), system-ui, sans-serif; }
+.robo[data-expressao="sonolento"] .zz text { animation: zz 2.4s ease-in-out infinite; }
+.robo .zz text:nth-child(2) { animation-delay: 0.4s; }
+.robo .zz text:nth-child(3) { animation-delay: 0.8s; }
+
+@keyframes zz {
+  0% { opacity: 0; transform: translateY(8px); }
+  40% { opacity: 1; }
+  100% { opacity: 0; transform: translateY(-10px); }
+}
+
+/* tonto: a cabeça cambaleia */
+.robo[data-expressao="tonto"] .cabeca { animation: tonto 0.5s ease-in-out 3; }
+
+@keyframes tonto {
+  25% { transform: rotate(-9deg); }
+  75% { transform: rotate(9deg); }
+}
+
+.robo .fala {
+  transform-box: view-box;
+  transform-origin: 160px 70px;
+  animation: fala-entra 0.3s cubic-bezier(0.3, 1.6, 0.6, 1);
+}
+
+@keyframes fala-entra {
+  from { opacity: 0; transform: scale(0.5); }
+}
+
+@keyframes piscar {
+  0%, 92%, 100% { transform: scaleY(1); }
+  96% { transform: scaleY(0.1); }
+}
+
+@keyframes sinal {
+  0%, 70%, 100% { fill: var(--vermelho); }
+  80% { fill: #fff; }
+}
+
+@keyframes alerta {
+  50% { fill: #fff; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .robo * { animation: none !important; transition: none !important; }
+}
+
+/* ---------- medidor (igual ao da apresentação) ---------- */
+
+.medidor { overflow: visible; }
+.medidor .trilho { fill: none; stroke: #d9d9d5; stroke-width: 16; }
+.medidor .valor {
+  fill: none;
+  stroke: var(--vermelho);
+  stroke-width: 16;
+  stroke-dasharray: var(--v) 100;
+  transition: stroke-dasharray 0.8s ease;
+}
+.medidor .risco { stroke: var(--tinta); stroke-width: 2.5; }
+.medidor .risco.maior { stroke-width: 4; }
+.medidor .ponteiro {
+  stroke: var(--tinta);
+  stroke-width: 6;
+  stroke-linecap: round;
+  transform-origin: 110px 112px;
+  transform: rotate(var(--ang));
+  transition: transform 0.8s ease;
+}
+.medidor .eixo { fill: #fff; stroke: var(--tinta); stroke-width: 5; }
+.medidor .eixo-miolo { fill: var(--tinta); }
+
+/* ---------- trilha de etapas ---------- */
+
+.etapas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 36px;
+  padding: 0;
+  list-style: none;
+  font-size: 0.95rem;
+  color: var(--tinta-suave);
+}
+
+.etapas li {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.etapas li + li::before {
+  content: "";
+  position: absolute;
+  left: -30px;
+  width: 24px;
+  border-top: 2px dashed var(--tinta);
+  opacity: 0.35;
+}
+
+.etapa-marco {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 2px solid var(--linha);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.etapas .feita .etapa-marco {
+  border-color: var(--tinta);
+}
+
+.etapas .atual {
+  color: var(--tinta);
+  font-weight: 500;
+}
+
+.etapas .atual .etapa-marco {
+  border-color: var(--vermelho);
+  background: var(--vermelho);
+  color: #fff;
+}
+
+/* ---------- logo e rodapé ---------- */
+
+.marca {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.marca svg {
+  width: 30px;
+  height: 30px;
+}
+
+.rodape {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 32px 16px 48px;
+  border-top: 1px solid var(--linha);
+  font-size: 0.9rem;
   color: var(--tinta-suave);
 }
 

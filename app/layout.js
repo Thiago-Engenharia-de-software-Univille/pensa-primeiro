@@ -1,5 +1,7 @@
 import { Inter_Tight, Marcellus } from "next/font/google";
 import Link from "next/link";
+import CabecaRobo from "@/components/CabecaRobo";
+import Voltar from "@/components/Voltar";
 import "./globals.css";
 
 const serifa = Marcellus({
@@ -23,15 +25,24 @@ export default function RootLayout({ children }) {
     <html lang="pt-BR" className={`${serifa.variable} ${grotesca.variable}`}>
       <body>
         <header className="topo">
-          <Link href="/" className="marca">
-            Pensa <span>Primeiro</span>
+          <Link href="/" className="marca" aria-label="Pensa Primeiro, início">
+            <CabecaRobo />
+            Pensa Primeiro
           </Link>
           <nav className="menu">
             <Link href="/estudar">Estudar</Link>
+            <Link href="/confira">Confira a IA</Link>
             <Link href="/painel">Painel</Link>
+            <Link href="/sobre">Sobre</Link>
           </nav>
         </header>
-        <main>{children}</main>
+        <main>
+          <Voltar />
+          {children}
+        </main>
+        <footer className="rodape">
+          Trabalho de Interação Humano-Computador, Engenharia de Software, Univille, 2026.
+        </footer>
       </body>
     </html>
   );

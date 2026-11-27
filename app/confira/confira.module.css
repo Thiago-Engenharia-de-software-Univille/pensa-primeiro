@@ -1,0 +1,231 @@
+.tela {
+  display: grid;
+  gap: 32px;
+  padding-top: 24px;
+}
+
+.cabeca {
+  display: grid;
+  gap: 14px;
+}
+
+.titulo {
+  font-size: clamp(2.6rem, 6vw, 4.2rem);
+  letter-spacing: -0.02em;
+}
+
+.sub {
+  max-width: 52ch;
+  font-size: 1.15rem;
+  color: var(--tinta-suave);
+}
+
+/* ---------- placar das rodadas ---------- */
+
+.placar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 0;
+  list-style: none;
+  font-size: 0.9rem;
+}
+
+.placar li {
+  padding: 6px 14px;
+  border: 1px dashed var(--linha);
+  border-radius: 999px;
+  color: var(--tinta-suave);
+}
+
+.placar .atual {
+  border: 1px solid var(--tinta);
+  color: var(--tinta);
+  font-weight: 500;
+}
+
+.placar .achou {
+  border: 1px solid var(--vermelho);
+  background: var(--vermelho);
+  color: #fff;
+}
+
+.placar .passou {
+  border: 1px solid var(--tinta-suave);
+  text-decoration: line-through;
+}
+
+/* ---------- rodada ---------- */
+
+.rodada {
+  display: grid;
+  gap: 20px;
+  max-width: 760px;
+}
+
+.quem {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--vermelho);
+}
+
+/* pergunta do aluno: balão do lado direito, como numa conversa */
+.perguntaAluno {
+  justify-self: end;
+  display: grid;
+  gap: 4px;
+  max-width: 78%;
+  padding: 14px 20px;
+  background: var(--tinta);
+  color: var(--papel);
+  border-radius: 16px 16px 4px 16px;
+  font-weight: 500;
+}
+
+.perguntaAluno .quem {
+  color: #ffb3b3;
+}
+
+.respostaIA {
+  display: grid;
+  grid-template-columns: 40px 1fr;
+  gap: 12px;
+  align-items: start;
+}
+
+.avatar {
+  margin-top: 4px;
+}
+
+.balao {
+  display: grid;
+  gap: 8px;
+  padding: 18px 20px;
+  background: var(--papel);
+  border: 1px solid var(--tinta);
+  border-radius: 4px 16px 16px 16px;
+}
+
+.instrucao {
+  color: var(--tinta-suave);
+  font-size: 0.95rem;
+}
+
+.frases {
+  display: grid;
+  gap: 4px;
+  padding: 0;
+  list-style: none;
+}
+
+.frase {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: none;
+  font: inherit;
+  font-size: 1.05rem;
+  line-height: 1.5;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.frase:not(:disabled):hover {
+  border-color: var(--vermelho);
+  background: #fff;
+}
+
+.frase:focus-visible {
+  outline: 2px solid var(--vermelho);
+  outline-offset: 1px;
+}
+
+.frase:disabled {
+  cursor: default;
+}
+
+/* depois de responder */
+.errada {
+  background: var(--vermelho-claro);
+  border-color: var(--vermelho);
+  text-decoration: line-through;
+  text-decoration-color: var(--vermelho);
+  text-decoration-thickness: 2px;
+}
+
+.escolhida {
+  border-color: var(--tinta);
+  border-style: dashed;
+}
+
+.apagada {
+  color: var(--tinta-suave);
+}
+
+.veredito {
+  display: grid;
+  gap: 10px;
+  margin-left: 52px;
+  padding-top: 18px;
+  border-top: 2px solid var(--tinta);
+  animation: chegar 0.35s ease-out;
+}
+
+.veredito h2 {
+  font-size: 2rem;
+}
+
+.certo h2 {
+  color: var(--vermelho);
+}
+
+/* ---------- final ---------- */
+
+.final {
+  display: grid;
+  gap: 14px;
+  max-width: 620px;
+}
+
+.placarFinal {
+  font-size: clamp(5rem, 14vw, 8rem);
+  font-weight: 300;
+  line-height: 0.9;
+  letter-spacing: -0.05em;
+  color: var(--vermelho);
+}
+
+.placarFinal span {
+  font-size: 0.35em;
+  letter-spacing: 0;
+  color: var(--tinta);
+}
+
+.final h2 {
+  font-size: 2rem;
+}
+
+@keyframes chegar {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .veredito {
+    animation: none;
+  }
+}
+
+@media (max-width: 760px) {
+  .perguntaAluno {
+    max-width: 92%;
+  }
+
+  .veredito {
+    margin-left: 0;
+  }
+}

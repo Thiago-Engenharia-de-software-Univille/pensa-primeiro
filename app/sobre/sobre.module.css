@@ -1,0 +1,188 @@
+.sobre {
+  display: grid;
+  padding-top: 24px;
+}
+
+.abertura {
+  display: grid;
+  gap: 20px;
+  padding-bottom: 56px;
+}
+
+.titulo {
+  font-size: clamp(2.8rem, 7vw, 5rem);
+  line-height: 0.95;
+  letter-spacing: -0.025em;
+  max-width: 12ch;
+}
+
+.lead {
+  max-width: 56ch;
+  font-size: 1.2rem;
+  line-height: 1.55;
+  color: var(--tinta-suave);
+}
+
+.secao {
+  display: grid;
+  gap: 28px;
+  padding: 56px 0;
+  border-top: 1px solid var(--linha);
+}
+
+.secao h2 {
+  font-size: clamp(1.7rem, 3.6vw, 2.3rem);
+  max-width: 24ch;
+}
+
+.texto {
+  max-width: 64ch;
+  font-size: 1.05rem;
+  line-height: 1.65;
+}
+
+.nota {
+  color: var(--tinta-suave);
+  font-size: 0.95rem;
+}
+
+/* ---------- dados com medidores ---------- */
+
+.dados {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 32px;
+  padding: 0;
+  list-style: none;
+}
+
+.dados li {
+  display: grid;
+  gap: 10px;
+  align-content: start;
+}
+
+.medida {
+  display: flex;
+  align-items: flex-end;
+  gap: 14px;
+}
+
+.medidor {
+  width: 120px;
+}
+
+.medida strong {
+  font-size: 3.4rem;
+  font-weight: 300;
+  line-height: 0.9;
+  letter-spacing: -0.05em;
+  color: var(--vermelho);
+}
+
+.dados cite {
+  font-size: 0.85rem;
+  font-style: normal;
+  color: var(--tinta-suave);
+}
+
+/* ---------- matriz CSD ---------- */
+
+.csd {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0;
+  border-top: 2px solid var(--tinta);
+}
+
+.csd > div {
+  display: grid;
+  gap: 12px;
+  align-content: start;
+  padding: 20px 20px 4px 0;
+}
+
+.csd > div + div {
+  padding-left: 20px;
+  border-left: 1px solid var(--linha);
+}
+
+.csd h3 {
+  font-size: 1.4rem;
+}
+
+.csd ul {
+  display: grid;
+  gap: 10px;
+  padding-left: 18px;
+}
+
+.csd li::marker {
+  color: var(--vermelho);
+}
+
+/* ---------- respostas do site ---------- */
+
+.respostas {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0 40px;
+}
+
+.respostas > div {
+  display: grid;
+  gap: 4px;
+  padding: 18px 0;
+  border-top: 1px solid var(--linha);
+}
+
+.respostas dt {
+  font-weight: 600;
+}
+
+.respostas dt a {
+  text-decoration-color: var(--vermelho);
+  text-underline-offset: 4px;
+}
+
+.respostas dd {
+  margin: 0;
+  color: var(--tinta-suave);
+}
+
+/* ---------- créditos ---------- */
+
+.creditos {
+  grid-template-columns: 1fr 2fr;
+  gap: 40px;
+}
+
+.creditos > div {
+  display: grid;
+  gap: 14px;
+  align-content: start;
+}
+
+.refs {
+  display: grid;
+  gap: 10px;
+  padding-left: 20px;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: var(--tinta-suave);
+}
+
+@media (max-width: 760px) {
+  .dados,
+  .csd,
+  .respostas,
+  .creditos {
+    grid-template-columns: 1fr;
+  }
+
+  .csd > div + div {
+    padding-left: 0;
+    border-left: none;
+    border-top: 1px solid var(--linha);
+  }
+}
