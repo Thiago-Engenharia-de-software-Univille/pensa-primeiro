@@ -21,7 +21,7 @@ export async function POST(request) {
   const tentativa = String(corpo.tentativa ?? "")
     .trim()
     .slice(0, 800);
-  if (tentativa.length < 3) return Response.json({ erro: "pedido-invalido" }, { status: 400 });
+  if (tentativa.length < 1) return Response.json({ erro: "pedido-invalido" }, { status: 400 });
 
   let chave, enunciado, referencia;
   if (corpo.perguntaId === "livre") {
@@ -35,14 +35,15 @@ export async function POST(request) {
     const pergunta = buscarPergunta(String(corpo.perguntaId ?? ""));
     if (!pergunta) return Response.json({ erro: "pedido-invalido" }, { status: 400 });
     chave = pergunta.id;
-    enunciado = pergunta.enunciado;
+    enunciado = pergunta.codigo ? `${pergunta.enunciado}\nCódigo:\n${pergunta.codigo}` : pergunta.enunciado;
     referencia = pergunta.resposta;
   }
 
   const ip = (request.headers.get("x-forwarded-for") ?? "local").split(",")[0].trim();
+  const nivel = ["facil", "medio", "dificil"].includes(corpo.nivel) ? corpo.nivel : "medio";
 
   try {
-    const resultado = await conferirComGemini({ chave, enunciado, referencia, tentativa, ip });
+    const resultado = await conferirComGemini({ chave, enunciado, referencia, tentativa, nivel, ip });
     return Response.json(resultado);
   } catch (erro) {
     const limite = erro.codigo === "limite";

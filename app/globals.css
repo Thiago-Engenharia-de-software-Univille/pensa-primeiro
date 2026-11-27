@@ -469,3 +469,67 @@ textarea {
   align-items: center;
   gap: 12px;
 }
+
+/* ---------- seletor de nível (Fácil · Médio · Difícil) ---------- */
+
+.nivel {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 14px;
+}
+
+.nivel-rotulo {
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.nivel-opcoes {
+  display: inline-flex;
+  padding: 3px;
+  border: 1px solid var(--linha);
+  border-radius: 999px;
+  background: var(--papel);
+}
+
+.nivel-opcoes button {
+  padding: 6px 16px;
+  border: none;
+  border-radius: 999px;
+  background: none;
+  font: inherit;
+  font-size: 0.92rem;
+  color: var(--tinta-suave);
+  cursor: pointer;
+}
+
+.nivel-opcoes button:hover {
+  color: var(--tinta);
+}
+
+.nivel-opcoes button.ativo {
+  background: var(--tinta);
+  color: var(--papel);
+}
+
+.nivel-opcoes button:focus-visible {
+  outline: 2px solid var(--vermelho);
+  outline-offset: 1px;
+}
+
+.nivel-descricao {
+  flex-basis: 100%;
+  font-size: 0.88rem;
+  color: var(--tinta-suave);
+}
+
+.nivel-compacto .nivel-rotulo {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--tinta-suave);
+}
+
+.nivel-compacto .nivel-opcoes button {
+  padding: 4px 12px;
+  font-size: 0.85rem;
+}

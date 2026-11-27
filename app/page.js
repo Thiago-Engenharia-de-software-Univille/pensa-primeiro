@@ -15,7 +15,7 @@ const ferramentas = [
     href: "/estudar",
     acao: "Escolher uma pergunta",
     texto:
-      "Seis perguntas de matérias diferentes. Você escreve a sua tentativa numa folha de caderno, confere na hora se está certa e abre as dicas só se precisar.",
+      "Perguntas da escola e de programação (HTML, CSS, Python, JavaScript, TypeScript, C, C++ e C#). Você escreve a tentativa, confere na hora e escolhe o nível de ajuda: fácil, médio ou difícil.",
   },
   {
     nome: "Pergunta livre",

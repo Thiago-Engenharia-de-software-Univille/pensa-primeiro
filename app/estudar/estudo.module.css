@@ -428,3 +428,90 @@
     display: none;
   }
 }
+
+/* ---------- dicas de escrita (discretas) ---------- */
+
+.escrita {
+  display: grid;
+  gap: 6px;
+  padding: 10px 14px;
+  border-left: 3px solid var(--linha);
+  font-size: 0.92rem;
+  color: var(--tinta-suave);
+}
+
+.escrita strong {
+  color: var(--tinta);
+  font-weight: 600;
+}
+
+.de {
+  text-decoration: line-through;
+  text-decoration-color: rgba(30, 30, 30, 0.35);
+}
+
+.escritaAcoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+}
+
+.escritaBotao {
+  padding: 2px 0;
+  border: none;
+  background: none;
+  font: inherit;
+  font-size: 0.88rem;
+  color: var(--tinta-suave);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.escritaBotao:hover {
+  color: var(--tinta);
+}
+
+.escritaBotao:focus-visible {
+  outline: 2px solid var(--vermelho);
+  outline-offset: 2px;
+}
+
+/* ---------- grupos, nível e código ---------- */
+
+.grupo {
+  padding: 32px 8px 10px;
+  font-size: 1.35rem;
+}
+
+.opcoes > li:first-child .grupo {
+  padding-top: 8px;
+}
+
+.topoDireita {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 20px;
+}
+
+.codigo {
+  max-width: 640px;
+  overflow-x: auto;
+  padding: 16px 20px;
+  border-radius: 12px;
+  background: var(--tinta);
+  color: #f4f4f2;
+  font: 500 0.98rem/1.6 ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  tab-size: 4;
+}
+
+.codigoMini {
+  display: block;
+  margin-top: 6px;
+  font: 500 0.88rem/1.4 ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  color: var(--tinta-suave);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

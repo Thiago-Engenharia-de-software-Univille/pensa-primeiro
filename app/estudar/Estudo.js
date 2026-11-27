@@ -5,15 +5,21 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import CabecaRobo from "@/components/CabecaRobo";
 import Etapas from "@/components/Etapas";
-import { perguntas, buscarPergunta, perguntaLivre } from "@/lib/perguntas";
+import { perguntas, buscarPergunta, perguntaLivre, areaDe } from "@/lib/perguntas";
+import { NIVEIS, useNivel, suavizarRetorno } from "@/lib/nivel";
+import NivelSeletor from "@/components/NivelSeletor";
 import { registrar, RESULTADOS } from "@/lib/historico";
 import { podeVerificar, verificar } from "@/lib/verificador";
 import { conferirComIA } from "@/lib/conferirIA";
+import { sugestoesDeEscrita, juntarSugestoes, aplicarSugestoes } from "@/lib/escrita";
 import styles from "./estudo.module.css";
 
 const NOMES_DICA = ["Dica 1", "Dica 2", "Explicação"];
 const NOMES_DICA_LIVRE = ["Dica 1", "Dica 2", "Dica 3"];
-const MINIMO_TENTATIVA = 15; // caracteres para liberar a primeira dica
+// caracteres para liberar a conferência e a primeira dica
+// (em programação a resposta pode ser só "53" ou "3", então basta escrever algo)
+const MINIMO_TENTATIVA = 15;
+const minimoPara = (pergunta) => (pergunta && areaDe(pergunta) === "programacao" ? 1 : MINIMO_TENTATIVA);
 
 const MENSAGEM_FIM = {
   sozinho: "Nenhuma dica usada. Foi tudo seu.",
@@ -23,7 +29,14 @@ const MENSAGEM_FIM = {
     "Faz parte. Anote a dúvida e leve para a aula ou para o material da matéria: chegar com a pergunta certa já é meio caminho.",
 };
 
-const SESSAO_NOVA = { tentativa: "", dicas: 0, respostaVista: false, retorno: null, resultado: null };
+const SESSAO_NOVA = {
+  tentativa: "",
+  dicas: 0,
+  respostaVista: false,
+  retorno: null,
+  resultado: null,
+  escrita: [],
+};
 
 // Cada etapa tem o seu endereço, para o "Voltar" (do site, do navegador ou do celular)
 // voltar uma etapa de cada vez:
@@ -39,6 +52,8 @@ export default function Estudo() {
   const [escrevendoLivre, setEscrevendoLivre] = useState(false);
   const [textoLivre, setTextoLivre] = useState("");
   const [conferindo, setConferindo] = useState(false);
+  const nivel = useNivel();
+  const ajuda = NIVEIS[nivel];
 
   const perguntaId = params.get("p");
   const pergunta =
@@ -51,7 +66,7 @@ export default function Estudo() {
         : null;
 
   const sessao = (pergunta && sessoes[pergunta.id]) || SESSAO_NOVA;
-  const { tentativa, dicas: dicasAbertas, respostaVista, retorno, resultado } = sessao;
+  const { tentativa, dicas: dicasAbertas, respostaVista, retorno, resultado, escrita = [] } = sessao;
   const etapa = !pergunta ? "escolher" : resultado ? "fim" : params.get("e") === "dicas" ? "dicas" : "tentar";
   const indiceEtapa = { escolher: 0, tentar: 1, dicas: 2, fim: 3 }[etapa];
 
@@ -88,6 +103,10 @@ export default function Estudo() {
     ir(pergunta.id, "dicas");
   }
 
+  function aplicarEscrita() {
+    atualizar({ tentativa: aplicarSugestoes(tentativa, escrita), escrita: [] });
+  }
+
   function mudarTentativa(texto) {
     atualizar({ tentativa: texto, retorno: null }); // a conferência anterior não vale mais
   }
@@ -97,7 +116,7 @@ export default function Estudo() {
     if (
       e.key === "Enter" &&
       (e.ctrlKey || e.metaKey) &&
-      tentativa.trim().length >= MINIMO_TENTATIVA &&
+      tentativa.trim().length >= minimoPara(pergunta) &&
       !conferindo
     ) {
       e.preventDefault();
@@ -108,16 +127,21 @@ export default function Estudo() {
   // Primeiro o verificador local (grátis e instantâneo). Só se ele não confirmar,
   // ou se for pergunta livre, pedimos para a IA conferir: assim a cota gratuita rende.
   async function conferir() {
-    const local = podeVerificar(pergunta.id) ? verificar(pergunta.id, tentativa) : null;
+    const local = podeVerificar(pergunta.id)
+      ? suavizarRetorno(verificar(pergunta.id, tentativa), nivel)
+      : null;
+    const escritaLocal = sugestoesDeEscrita(tentativa);
     if (local?.status === "certo") {
+      atualizar({ escrita: escritaLocal });
       terminar(dicasAbertas === 0 ? "sozinho" : "dicas", { ...local, fonte: "site" });
       return;
     }
     setConferindo(true);
-    const ia = await conferirComIA(pergunta, tentativa);
+    const ia = await conferirComIA(pergunta, tentativa, nivel);
     setConferindo(false);
     // sem IA disponível, vale o verificador local (se houver) com o aviso de indisponibilidade
     const r = ia.status === "indisponivel" && local ? { ...local, aviso: ia.mensagem } : ia;
+    atualizar({ escrita: juntarSugestoes(escritaLocal, ia.escrita ?? []) });
     if (r.status === "certo") terminar(dicasAbertas === 0 ? "sozinho" : "dicas", r);
     else {
       atualizar({ retorno: r });
@@ -142,28 +166,42 @@ export default function Estudo() {
       <section className={styles.tela}>
         <Etapas atual={0} />
         <h1 className={styles.titulo}>O que você quer estudar?</h1>
-        <p className={styles.nota}>Neste protótipo, as dicas foram escritas pelo grupo para simular a IA.</p>
+        <p className={styles.nota}>
+          As dicas foram escritas pelo grupo para simular a IA. A conferência das respostas usa a IA de
+          verdade.
+        </p>
+        <NivelSeletor />
         <ul className={styles.opcoes}>
-          {perguntas.map((p) => {
+          {perguntas.map((p, i) => {
             const s = sessoes[p.id];
             const andamento = s?.resultado
               ? "Feita · refazer"
               : s?.tentativa
                 ? "Continuar de onde parou"
                 : null;
+            const novaArea = i === 0 || areaDe(perguntas[i - 1]) !== areaDe(p);
             return (
               <li key={p.id}>
+                {novaArea && (
+                  <h2 className={styles.grupo}>
+                    {areaDe(p) === "programacao" ? "Programação" : "Matérias da escola"}
+                  </h2>
+                )}
                 <button className={`opcao ${styles.opcao}`} onClick={() => escolher(p.id)}>
                   <span className={styles.materia}>
                     {p.materia}
                     {andamento && <span className={styles.andamento}>{andamento}</span>}
                   </span>
-                  <span className={styles.enunciadoOpcao}>{p.enunciado}</span>
+                  <span className={styles.enunciadoOpcao}>
+                    {p.enunciado}
+                    {p.codigo && <code className={styles.codigoMini}>{p.codigo.split("\n")[0]}</code>}
+                  </span>
                 </button>
               </li>
             );
           })}
           <li className={styles.livre}>
+            <h2 className={styles.grupo}>Outra dúvida</h2>
             {!(escrevendoLivre || perguntaId === "livre") ? (
               <button className={`opcao ${styles.opcao}`} onClick={() => setEscrevendoLivre(true)}>
                 <span className={styles.materia}>Sua pergunta</span>
@@ -180,8 +218,8 @@ export default function Estudo() {
                 <label htmlFor="livre" className={styles.rotuloFolha}>
                   Qual é a sua pergunta?
                   <span className={styles.nota}>
-                    Sem uma IA de verdade neste protótipo, as dicas para perguntas livres são de método: elas
-                    ensinam o caminho, não o conteúdo.
+                    As dicas para perguntas livres são de método: ensinam o caminho, não o conteúdo. A IA
+                    confere a sua resposta.
                   </span>
                 </label>
                 <textarea
@@ -215,10 +253,13 @@ export default function Estudo() {
   const semResposta = pergunta.resposta === null;
   const nomes = semResposta ? NOMES_DICA_LIVRE : NOMES_DICA;
 
-  const tentativaValida = tentativa.trim().length >= MINIMO_TENTATIVA;
-  const todasAbertas = dicasAbertas === pergunta.dicas.length;
+  const tentativaValida = tentativa.trim().length >= minimoPara(pergunta);
+  // o nível de ajuda decide quantas dicas existem e quando a resposta pode ser aberta
+  const dicas = semResposta ? pergunta.dicas : pergunta.dicas.slice(0, ajuda.dicasMaximas);
+  const todasAbertas = dicasAbertas >= dicas.length;
+  const respostaLiberada = dicasAbertas >= Math.min(ajuda.respostaDepoisDe, dicas.length);
   const terminou = etapa === "fim";
-  const dicasVisiveis = terminou ? pergunta.dicas.length : dicasAbertas; // no fim, dá para rever tudo
+  const dicasVisiveis = terminou ? dicas.length : dicasAbertas; // no fim, dá para rever tudo
   const respostaAberta = respostaVista || terminou;
 
   return (
@@ -231,26 +272,33 @@ export default function Estudo() {
           }
           liberadas={etapa === "fim" ? 1 : dicasAbertas > 0 || etapa === "dicas" ? 3 : 2}
         />
-        {etapa !== "fim" && (
-          <button className="botao discreto" onClick={estudarOutra}>
-            Trocar de pergunta
-          </button>
-        )}
+        <div className={styles.topoDireita}>
+          {etapa !== "fim" && <NivelSeletor compacto />}
+          {etapa !== "fim" && (
+            <button className="botao discreto" onClick={estudarOutra}>
+              Trocar de pergunta
+            </button>
+          )}
+        </div>
       </div>
 
       <div className={styles.pergunta}>
         <span className={styles.materia}>{pergunta.materia}</span>
         <h1 className={styles.enunciado}>{pergunta.enunciado}</h1>
+        {pergunta.codigo && (
+          <pre className={styles.codigo}>
+            <code>{pergunta.codigo}</code>
+          </pre>
+        )}
       </div>
 
       {terminou && (
         <Veredito
+          escrita={escrita}
           resultado={resultado}
           retorno={retorno}
           mensagemFim={
-            resultado === "dicas"
-              ? MENSAGEM_FIM.dicas(dicasAbertas, pergunta.dicas.length)
-              : MENSAGEM_FIM[resultado]
+            resultado === "dicas" ? MENSAGEM_FIM.dicas(dicasAbertas, dicas.length) : MENSAGEM_FIM[resultado]
           }
           acoes={
             <div className="acoes">
@@ -286,6 +334,11 @@ export default function Estudo() {
             autoFocus
           />
           <Retorno retorno={retorno} />
+          <Escrita
+            sugestoes={escrita}
+            aoAplicar={aplicarEscrita}
+            aoDispensar={() => atualizar({ escrita: [] })}
+          />
           <div className="acoes">
             <button className="botao" disabled={!tentativaValida || conferindo} onClick={conferir}>
               {conferindo ? "Conferindo…" : "Conferir minha resposta"}
@@ -341,11 +394,18 @@ export default function Estudo() {
               readOnly={etapa === "fim"}
             />
             {etapa === "dicas" && <Retorno retorno={retorno} />}
+            {etapa === "dicas" && (
+              <Escrita
+                sugestoes={escrita}
+                aoAplicar={aplicarEscrita}
+                aoDispensar={() => atualizar({ escrita: [] })}
+              />
+            )}
           </div>
 
           <div className={styles.conversa}>
             <ol className={styles.dicas}>
-              {pergunta.dicas.map((texto, i) =>
+              {dicas.map((texto, i) =>
                 i < dicasVisiveis ? (
                   <li key={i} className={styles.dica}>
                     <CabecaRobo tamanho={36} className={styles.avatar} />
@@ -376,11 +436,11 @@ export default function Estudo() {
                 {!respostaAberta && (
                   <button
                     className={styles.lacre}
-                    disabled={!todasAbertas || etapa === "fim"}
+                    disabled={!respostaLiberada || etapa === "fim"}
                     onClick={() => atualizar({ respostaVista: true })}
-                    title={todasAbertas ? undefined : "Abra as dicas antes"}
+                    title={respostaLiberada ? undefined : "Abra as dicas antes"}
                   >
-                    {todasAbertas ? "Abrir resposta" : "Lacrada"}
+                    {respostaLiberada ? "Abrir resposta" : "Lacrada"}
                   </button>
                 )}
               </div>
@@ -390,7 +450,7 @@ export default function Estudo() {
               <div className={styles.controles}>
                 <p>
                   {retorno && retorno.status !== "certo"
-                    ? dicasAbertas < pergunta.dicas.length
+                    ? dicasAbertas < dicas.length
                       ? "Corrija a tentativa e confira de novo. Se quiser uma ajuda, abra uma dica."
                       : "Corrija a tentativa e confira de novo."
                     : dicasAbertas === 0
@@ -462,7 +522,7 @@ function Retorno({ retorno }) {
 }
 
 // Resultado da pergunta: o que aconteceu e QUEM conferiu, sem deixar dúvida.
-function Veredito({ resultado, retorno, mensagemFim, acoes }) {
+function Veredito({ resultado, retorno, mensagemFim, acoes, escrita }) {
   const confirmado = retorno?.status === "certo";
   let selo;
   if (confirmado && retorno.fonte === "ia") selo = "Resposta conferida pela IA (Gemini): está certa.";
@@ -479,8 +539,39 @@ function Veredito({ resultado, retorno, mensagemFim, acoes }) {
       </p>
       <h2>{RESULTADOS[resultado]}</h2>
       {confirmado && <p className={styles.porque}>{retorno.mensagem}</p>}
+      <Escrita sugestoes={escrita} />
       <p>{mensagemFim}</p>
       {acoes}
+    </div>
+  );
+}
+
+// Dicas de escrita: discretas, gentis e opcionais. Aparecem só depois de conferir.
+function Escrita({ sugestoes, aoAplicar, aoDispensar }) {
+  if (!sugestoes?.length) return null;
+  return (
+    <div className={styles.escrita}>
+      <p>
+        <span aria-hidden="true">✎ </span>
+        {sugestoes.length === 1 ? "Uma dica de escrita, se quiser: " : "Umas dicas de escrita, se quiser: "}
+        {sugestoes.map((s, i) => (
+          <span key={s.de}>
+            {i > 0 && ", "}
+            <span className={styles.de}>{s.de}</span> → <strong>{s.para}</strong>
+          </span>
+        ))}
+        .
+      </p>
+      {aoAplicar && (
+        <div className={styles.escritaAcoes}>
+          <button type="button" className={styles.escritaBotao} onClick={aoAplicar}>
+            Corrigir para mim
+          </button>
+          <button type="button" className={styles.escritaBotao} onClick={aoDispensar}>
+            Deixar assim
+          </button>
+        </div>
+      )}
     </div>
   );
 }

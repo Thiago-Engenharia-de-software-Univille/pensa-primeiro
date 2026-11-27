@@ -31,17 +31,37 @@
   font-size: 0.9rem;
 }
 
-.placar li {
+.placar button {
   padding: 6px 14px;
   border: 1px dashed var(--linha);
   border-radius: 999px;
+  background: none;
+  font: inherit;
+  font-size: 0.9rem;
   color: var(--tinta-suave);
+  cursor: pointer;
+}
+
+.placar button:hover:not(:disabled) {
+  border-color: var(--tinta);
+  color: var(--tinta);
+}
+
+.placar button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.placar button:focus-visible {
+  outline: 2px solid var(--vermelho);
+  outline-offset: 2px;
 }
 
 .placar .atual {
   border: 1px solid var(--tinta);
   color: var(--tinta);
-  font-weight: 500;
+  font-weight: 600;
+  box-shadow: 0 0 0 2px var(--fundo), 0 0 0 4px var(--tinta);
 }
 
 .placar .achou {
@@ -226,6 +246,94 @@
   }
 
   .veredito {
+    margin-left: 0;
+  }
+}
+
+/* ---------- frases numeradas, navegação e revisão ---------- */
+
+.frase {
+  display: grid;
+  grid-template-columns: 26px 1fr;
+  gap: 10px;
+  align-items: baseline;
+}
+
+.numero {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 1px solid var(--linha);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--tinta-suave);
+  transform: translateY(-1px);
+}
+
+.navegacao {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-left: 52px;
+}
+
+.navegacao .botao:disabled {
+  visibility: hidden;
+}
+
+.atalhos {
+  margin-left: 52px;
+  font-size: 0.85rem;
+  color: var(--tinta-suave);
+}
+
+@media (hover: none) {
+  .soTeclado {
+    display: none;
+  }
+}
+
+.revisao {
+  display: grid;
+  padding: 0;
+  list-style: none;
+  border-bottom: 1px solid var(--linha);
+}
+
+.revisao button {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 12px 4px;
+  border: none;
+  border-top: 1px solid var(--linha);
+  background: none;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.revisao button:hover {
+  background: var(--papel);
+}
+
+.revisaoAcao {
+  margin-left: auto;
+  font-size: 0.9rem;
+  color: var(--tinta-suave);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+@media (max-width: 760px) {
+  .navegacao,
+  .atalhos {
     margin-left: 0;
   }
 }
